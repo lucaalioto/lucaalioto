@@ -1,9 +1,21 @@
 ---
-title: "Projects"
+title: "Projects & Research"
 ---
 
-## Project 1
+### Working Papers
 
-## Project 2
+\*Working papers available upon request
 
-## Project 3
+-   Exploring the Affordability, Accessibility, and Transportation-Related Effects of Accessory Dwelling Units in Sacramento — Co-Author with [Dr. Jamey Volker](https://its.ucdavis.edu/people/jamey-volker)
+
+### Class Projects
+
+-   [Economic Conditions and Populist Support: County-Level Evidence from the 2016 U.S. Presidential Election](pol212.qmd) — POL 212: Political Science Methods, Winter 2025
+
+-   Headline Framing in U.S. Coverage of the Israel–Hamas War: A Text-as-Data Approach — POL 290G: Computational Text Analysis, Spring 2025
+
+### Conferences & Presentations 
+
+-   Association of Collegiate Schools of Planning (2025) in Minneapolis
+
+### 

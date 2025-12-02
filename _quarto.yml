@@ -11,8 +11,6 @@ website:
       - href: projects.qmd
         text: Research
     tools:
-      - icon: twitter
-        href: https://twitter.com/
       - icon: github
         href: https://github.com/lucaalioto
   page-footer:

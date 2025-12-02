@@ -1,6 +1,7 @@
 ---
 title: "Economic Conditions and Populist Support: County-Level Evidence from the 2016 U.S. Presidential Election"
-author: "POL 212: Final Project (Winter 25) | Luca Alioto"
+subtitle: "POL 212: Final Project | Winter 25"
+author: "Luca Alioto"
 ---
 
 ```{r setup, include=FALSE}

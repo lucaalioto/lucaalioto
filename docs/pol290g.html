@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Text Analsyis of US Media Coverage of the Israel–Hamas Conflict – Luca Alioto</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-9e228d6d4d66c12a9d11739da31c2b1c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-4251a52cce185c249034d7c17982686d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Luca Alioto</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projects.html"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+    <a href="https://twitter.com/" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-twitter"></i></a>
+    <a href="https://github.com/lucaalioto" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">1 Introduction</a></li>
+  <li><a href="#hypothesies-and-motivations" id="toc-hypothesies-and-motivations" class="nav-link" data-scroll-target="#hypothesies-and-motivations">Hypothesies and Motivations</a></li>
+  <li><a href="#corpus-and-data-source" id="toc-corpus-and-data-source" class="nav-link" data-scroll-target="#corpus-and-data-source">2 Corpus and Data Source</a></li>
+  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">3 Methodology</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">4 Results</a>
+  <ul class="collapse">
+  <li><a href="#word-frequencies-by-group" id="toc-word-frequencies-by-group" class="nav-link" data-scroll-target="#word-frequencies-by-group">Word Frequencies by Group</a></li>
+  <li><a href="#tf-idf" id="toc-tf-idf" class="nav-link" data-scroll-target="#tf-idf">TF-IDF</a></li>
+  <li><a href="#sentiment-analysis" id="toc-sentiment-analysis" class="nav-link" data-scroll-target="#sentiment-analysis">Sentiment Analysis</a></li>
+  <li><a href="#unsupervised-machine-learning-lda-model-results" id="toc-unsupervised-machine-learning-lda-model-results" class="nav-link" data-scroll-target="#unsupervised-machine-learning-lda-model-results">Unsupervised Machine Learning (LDA Model) Results</a></li>
+  <li><a href="#supervised-machine-learning-model-results" id="toc-supervised-machine-learning-model-results" class="nav-link" data-scroll-target="#supervised-machine-learning-model-results">Supervised Machine Learning Model Results</a></li>
+  <li><a href="#bag-of-words" id="toc-bag-of-words" class="nav-link" data-scroll-target="#bag-of-words">Bag of Words:</a></li>
+  <li><a href="#intercoder-reliability" id="toc-intercoder-reliability" class="nav-link" data-scroll-target="#intercoder-reliability">Intercoder Reliability:</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Text Analsyis of US Media Coverage of the Israel–Hamas Conflict</h1>
+<p class="subtitle lead">POL 290G: Final Paper | Spring 2025</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">1 Introduction</h2>
+<p>Scholars and media critics have argued that U.S. newspaper coverage of the Israel–Palestine conflict has long reflected a systemic bias in favor of Israel and against Palestinians — a trend that critics claim has been exacerbated since the attacks on October 7th. This critique is rooted in both the language used and the structural absences in how events are reported, most notably the reporting of Palestinian deaths at the hands of the Israeli government. Mearsheimer and Walt (2007) argue in The Israel Lobby that “the American media’s coverage of Israel tends to be strongly biased in Israel’s favor,” a claim echoed by Rashid Khalidi (2021) in The Hundred Years’ War on Palestine, which documents consistent anti-Palestinian framing in prominent outlets like The New York Times. Bazian (2015) further situates anti-Palestinian media narratives within broader Islamophobic currents in U.S. mainstream discourse.</p>
+<p>In their passage in Blaming the Victims (2001), Edward Said and Noam Chomsky argue that Orientalist assumptions continue to shape how Palestinian violence is reported — with events often being stripped of historical or humanitarian context while Israeli state violence is either omitted or framed as justified defense. They contest that media narratives routinely cast Palestinians as instigators and Israelis as defenders, even when the opposite may be true.</p>
+<p>Research surrounding conflict in the region, such as the first and second intifada, as well as research without temporal constraints, have made similar claims of U.S. media coverage tending to disproportionately emphasize Israeli perspectives and narratives. As an example, Zelizer et al.&nbsp;(2002) found that The New York Times tended to portray Israelis as victims and Palestinians as aggressors in its headlines, and Ackerman (2001) observed a “systematic absence of context” in U.S. coverage of Palestinian suffering.</p>
+<p>Following Hamas’s attacks on Israel on October 7, 2023, Israel launched a sustained military campaign on Gaza that, according to Amnesty International, killed over 42,000 Palestinians by October 2024—including more than 13,300 children—and injured nearly 100,000 others. Amnesty reports that many of these deaths occurred in direct or deliberately indiscriminate attacks, often annihilating entire multigenerational families. Israel’s bombardment also caused what experts describe as “unprecedented destruction,” leveling entire cities, destroying agricultural land, religious and cultural sites, and rendering much of Gaza uninhabitable. The humanitarian toll of this conflict, particularly its scale and intensity, alongside the legacy of asymetric presentation of the Israel–Palestine conflict in U.S. media, creates an opportunity to analyze how these narratives are constructed and disseminated in the context of a major escalation.</p>
+<p>Additional papers have found a similar pattern with the coverage of Palestinian deaths after October 7th, finding the New York Times had consistently mentioned Israeli deaths more often than Palestinian deaths overall from 10/7 to 10/22, and that on average, about four Palestinians died per each mention of Palestinian deaths in The New York Times. On the other hand, Israeli deaths were matched almost exactly one-for-one by the Times. As well there were large differences in the rhetoric between the two groups, with the word “slaughter” being used 53 times in these articles since 10/7 to describe the deaths of Israelis and zero times to describe the death of Palestinians. The word “massacre” shows up 24 times in reference to Israelis and once in reference to Palestinians in the tagged sentences. The articles rarely mention the names of Palestinians who die, often framing their deaths in dehumanizing terms like “mourner”, “resident”, “assailant” or “militant”.</p>
+</section>
+<section id="hypothesies-and-motivations" class="level2">
+<h2 class="anchored" data-anchor-id="hypothesies-and-motivations">Hypothesies and Motivations</h2>
+<p>This project investigates how major U.S. newspapers framed the Israel–Hamas conflict in the immediate aftermath of the October 7, 2023 attacks by analyzing the reader’s initial impression — the headline. I hypothesize that the language used to describe Israeli and Palestinian actors in the headlines of US news media diverges systematically along dimensions of sentiment and framing—particularly in the attribution of aggression, victimhood, and legitimacy. The aim is to measure differences in tone, emotional framing, and lexical patterns across the headlines which referencing Israeli and Palestinian actors, and in doing so, to evaluate whether coverage aligns with or departs from the humanitarian realities reported by organizations such as Amnesty International.</p>
+<p>Through this analysis, I seek to quantify whether and how U.S. newspapers exhibit differential portrayals of the two sides. Specifically, I focus on whether Israeli and Palestinian actors are presented with distinct emotional tones, topic emphases, and narrative frames in mainstream media coverage between October 7 and December 31, 2023. By isolating and comparing these textual signals, the study aims to uncover asymmetries in representation that may suggest underlying media bias.</p>
+<p><span class="math display">\[
+\begin{array}{l}
+H_0\text{: There is no systematic difference in the language used to describe Israeli and Palestinian actors} \\
+\text{in U.S. newspaper coverage of the Israel–Hanas conflict} \\
+\\
+H_1\text{: There is a systematic difference in the language used to describe Israeli and Palestinian actors} \\
+\text{in U.S. newspaper coverage of the Israel–Hamas conflict}
+\end{array}
+\]</span></p>
+<p>The latent variable of interest is media framing bias, which I define here as the implicit patterns in journalistic language that portray one group as more legitimate, victimized, aggressive, or responsible than the other. While existing literature suggests that the absence of linguistic asymmetry in coverage of the Israel–Palestine conflict can obscure the effect of the disproportionate death toll and destruction inflicted by the Israeli military, this paper does not evaluate omissions or false equivalencies. Instead, it focuses solely on assessing the language that is present in mainstream coverage during the period of analysis.</p>
+</section>
+<section id="corpus-and-data-source" class="level2">
+<h2 class="anchored" data-anchor-id="corpus-and-data-source">2 Corpus and Data Source</h2>
+<p>To construct the corpus for analysis, I used the ProQuest U.S. Major Dailies database to retrieve news article headlines published within the year following the beginning of the conflict, between October 7, 2023 and October 7, 2024. In the ProQuest database, I searched for articles containing references to the conflict using a Boolean query that captured both geographic and conflict-related keywords. The following search was used to retrieve relevant articles from the ProQuest U.S. Major Dailies database:</p>
+<p>(“Israel” OR “Palestine” OR “Gaza” OR “Hamas” OR “West Bank” OR “Israel-Hamas” OR “Israel-Gaza”) AND (“war” OR “conflict” OR “attack” OR “bombing” OR “ceasefire” OR “hostage” OR “invasion” OR “crisis” OR “aid”) AND LA(english)</p>
+<p>From this I created a corpus with an n of 10,861 articles that were published in the U.S. Major Dailies collection during the specified time period. The search was designed to capture a wide range of articles related to the Israel–Palestine conflict, restricted to articles in English and to the following newspapers: <em>The New York Times</em>, <em>Washington Post</em>, <em>Los Angeles Times</em>, <em>Wall Street Journal</em>, <em>Boston Globe</em>, <em>Chicago Tribune</em>, <em>San Francisco Chronicle</em>, among others included in the U.S. Major Dailies collection. I further filtered the results to include only relevant article types, including only news reports, editorials, commentaries, and features, while excluding obituaries, multimedia clips, and corrections. The resulting dataset represents a curated collection of mainstream media coverage of the Israel–Palestine conflict during the defined time period.</p>
+<p>Unfortunately, due to most newspapers’ terms and conditions on data scraping, the original source data cannot be shared from ProQuest TDM Studio.</p>
+</section>
+<section id="methodology" class="level2">
+<h2 class="anchored" data-anchor-id="methodology">3 Methodology</h2>
+<p>Once collected, the articles were pre-processed in R using the <code>quanteda</code> package. The unit of analysis was the paragraph, which allowed for finer-grained comparisons of framing within individual documents. After constructing a corpus, I applied a series of standard pre-processing steps summarized by the acronym <strong>P-N-L-W-S-C</strong>:</p>
+<ul>
+<li><strong>P</strong> – Removed punctuation and symbols to clean the text and reduce noise.</li>
+<li><strong>N</strong> – Removed numbers to eliminate irrelevant numerical tokens.</li>
+<li><strong>L</strong> – Applied normalization by converting all words to lowercase.</li>
+<li><strong>W</strong> – Removed stopwords, including both standard English stopwords and a custom list (e.g., “Mr.,” “said,” and outlet names like New York Times) to eliminate high-frequency but semantically weak terms.</li>
+<li><strong>S</strong> – Applied stemming to unify word forms (e.g., “Israeli,” “Israelis” → “israel”).</li>
+<li><strong>C</strong> – Identified and compounded multi-word expressions (collocations) to treat them as single units (e.g., ‘Gaza Strip’ -&gt; ‘gaza_strip’)</li>
+</ul>
+<p>Before tokenization and stemming, I included key abbreviations and dates that commonly occur within the data Terms like ‘U.S.’ were standardized to ‘US’, ‘U.N.’ to ‘UN’, and ‘Oct.&nbsp;7’ to ‘oct7’ through a targeted substitution process. This ensured these critical entities were treated as single, coherent units throughout the analysis.</p>
+<p>I then created a document-feature matrix (DFM), built from the stemmed and compounded tokens, ensuring that all features (words and collocations) were in their standardized, processed form before further grouping. I then applied the Lexicoder Sentiment Dictionary (LSD2015) to the DFM for downstream analysis.</p>
+<p>For identifying mentions of Israeli or Palestinian actors, I used a distinct pre-processing approach to create binary flags (has_israeli and has_palestinian). Rather than creating separate corpora for each group, I flagged each paragraph in the main DFM. These flags were generated by searching the stemmed versions of the initial tokens for specific identifiers. This process allowed for improved matching across different word forms.</p>
+<ul>
+<li>For Israeli references, the list of identifiers included: “Israel,” “Israeli,” “Jewish,” “Tel Aviv,” “Jerusalem,” “Netanyahu,” and “oct7.”</li>
+<li>For Palestinian references, the list included: “Palestine,” “Arab,” “Palestinian,” “Palestinians,” “Gaza,” “Gaza Strip,” and “Rafah.”</li>
+</ul>
+<p>Each paragraph was labeled as has_israeli, has_palestinian, or both, depending on the presence of these identifiers. This tagging structure enabled comparative analysis without fragmenting the corpus.</p>
+<p>I then conducted a multi-step textual analysis. First, I calculated TF-IDF scores separately for Israeli- and Palestinian-flagged paragraphs to uncover distinctive lexical patterns. Second, I performed sentiment analysis using LSD2015 to compare emotional tone between the two sets of paragraphs. Third, I applied both unsupervised and seeded Latent Dirichlet Allocation (LDA) models to identify recurring themes and frames. The seeded LDA model used a custom dictionary of terms representing common narratives, including frames of victimization, terrorism, occupation, and resistance, to better understand how each group was portrayed.</p>
+<p>Finally, I constructed a smaller dictionary categorizing headline terms as Israeli-related, Palestinian-related, or neutral. I counted the frequency of these tags in headlines and compared the distribution to my own bias coding, using the proportion of conflict terms present in each category. This comparison enabled a rough check of how headline framing aligned with broader sentiment and topic patterns in the full-text articles.</p>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">4 Results</h2>
+<section id="word-frequencies-by-group" class="level3">
+<h3 class="anchored" data-anchor-id="word-frequencies-by-group">Word Frequencies by Group</h3>
+<p>To explore differences in how Israeli and Palestinian actors are framed, I analyzed the most frequent terms in headlines tagged as referencing each group.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pol290g_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above shows the top 15 terms in each subset. While many of the terms among the two groups are similar, their frequency and context among the other terms differ.</p>
+<p>In headlines referencing Israeli actors, the most prominent terms include “israel,” “isra,” “netanyahu,” and “jewish.” These terms suggests a framing that contextualizes the mention of Isreal by its national identity, political leadership, and religious character rather than the conflict or its US relations. As well, terms such as “gaza,” “war,” and “attack” having similar frequencies to “oct7” indicate that coverage is heavily framed in the events of October 7, 2023. This centering of Israeli hardship creates a narratives centered around Israel’s response to violence, rather than its disproportionate enactment of it. Other terms such as “hezbollah,” “biden” and “us” further points to a broader geopolitical framing that positions Israel as an actor in a regional security context.</p>
+<p>While the first mention of any Palestinian actor within Israeli-tagged headlines does not appear until the 7th and 8th most frequent terms, with “hama” and “gaza,” in Palestinian-tagged headlines, the terms “rafah” and “israel” emerge as the most frequent after basic identifiers. While “rafah” may be in reference to the humanitarian crisis which occured in the region, its high frequency in contrast with terms such as “aid” and “world” more likely reflects the political tensions that between the Biden administration and Prime Minister Netanyahu over Israeli military actions in southern Gaza than the crisis itself.</p>
+<p>This centering of Israeli and U.S. politics within Palestinian-tagged content suggests that Palestinians are often framed in relation to external state powers, rather than as autonomous political actors. Additionally, terms such as “aid,” “west_bank,” and “arab” emphasize a humanitarian and geographic lens, rather than one focused on leadership, institutional authority, or national sovereignty. This contrast reinforces a broader asymmetry in media framing, where Israeli actors are presented with a clear state identity, while Palestinian actors are often represented through crisis, dependency, or relation to foreign governments.</p>
+</section>
+<section id="tf-idf" class="level3">
+<h3 class="anchored" data-anchor-id="tf-idf">TF-IDF</h3>
+<p>To further explore the differences in sentiment between the two groups, I calculated TF-IDF scores for each group and visualized the top terms. As opposed to the basic term-frequency analysis, TF-IDF scores works to identify terms that are particularly distinctive to each group, rather than just the most frequent terms across both groups — helping to highlight any unique language used in headliens referencing Israeli and Palestinian actors.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pol290g_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above presents the top 15 TF-IDF terms for each group, which reflects many of the same patterns as the word frequencies For Israeli-tagged headlines, prominent terms include “netanyahu,” “oct7,” “attack,” “hezbollah,” and “strike,” reflecting a framing centered on leadership, military action, and Israel’s role as a primary actor in the conflict. Notably, “hamas” is the only Palestinian actor to appear in the Israeli TF-IDF list, and it does so relatively low in the ranking—indicating that Palestinian actors are rarely discussed in detail within headlines focused on Israel. In contrast, Israeli terms dominate the Palestinian TF-IDF list: “israel” appears near the top, alongside “us” and “biden”, reinforcing the observation that Palestinian actors are often framed through the lens of external powers.</p>
+<p>The Palestinian TF-IDF terms include words such as “gaza,” “rafah,” “aid,” “food,” “un,” and “egypt.” These reflect a humanitarian framing, where Palestinian experiences are depicted primarily in relation to crisis, displacement, and dependency. There is no mention of Palestinian leadership or political figures apart from “hamas,” suggesting a lack of narrative space for Palestinian agency or governance. The presence of “egypt” likely reflects Egypt’s geopolitical role in facilitating aid through the Rafah crossing, again positioning Palestinians as passive subjects in the actions of others.</p>
+<p>Additionally Israeli TF-IDF set also includes terms regarding conflict such as “plan,” “strike,” and “attack,” which stands in direct contrast to the Palestinian terms which only includes the word “war.” While their prevalence may be due to a presentation of Israel as the aggressor, these terms occur far less than terms such as “oct 7” and “hamas,” words used to frame the conflict through the lens of retaliation. As a result, it suggests that violence occurring on both side is being filtered through the presentation of Israel as a justified victim within the conflict. As well, the contrast creates a framing of Israeli actors as strategic and active agents in the region, while Palestinian actors are framed primarily as subjects of violence or humanitarian crises.</p>
+</section>
+<section id="sentiment-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="sentiment-analysis">Sentiment Analysis</h3>
+<p>In hopes of capturing the emotional tone of the headlines and the sentiment expressed towards Israeli and Palestinian actors, I applied sentiment analysis using the Lexicoder Sentiment Dictionary (LSD2015). This dictionary provides a set of positive and negative words that can be used to quantify sentiment in text. The sentiment scores were calculated for each headline in the DFM, and then aggregated to compare the average sentiment towards Israeli and Palestinian actors. Additionally, alongside the flag for either Israeli or Palestinian actors I created a binary flag for whether a headline mentioned both Israeli or Palestinian actors.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pol290g_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As shown in figure, the results reveal relatively small differences in average sentiment across groups. Headlines that reference both Israeli and Palestinian actors show slightly higher negative sentiment and lower net sentiment than those referencing only one side. However, overall variation is minimal.</p>
+<p>While this finding may suggest some level of parity in emotional tone across the corpus, it also raises questions about the sensitivity of dictionary-based sentiment tools to the specific framing strategies used in conflict reporting. Words associated with violence (e.g., “airstrike,” “hostage,” “siege,” “retaliation”) may not be classified as inherently positive or negative in the dictionary but carry heavy connotative weight in the context of war. As such, future research should consider developing or supplementing existing sentiment dictionaries with custom lexicons tailored to conflict, war reporting, and humanitarian discourse. This would better capture the nuances of how language signals blame, legitimacy, or victimhood in journalistic framing.</p>
+</section>
+<section id="unsupervised-machine-learning-lda-model-results" class="level3">
+<h3 class="anchored" data-anchor-id="unsupervised-machine-learning-lda-model-results">Unsupervised Machine Learning (LDA Model) Results</h3>
+<p>To provide a broader view of the thematic content in the headlines, I applied an unsupervised Latent Dirichlet Allocation (LDA) model to identify recurring topics and patterns. LDA is a model that assumes each headline can be represented as a mixture of different topics, and each topic is defined as a distribution of words that frequently appear together. The topics are generated by clustering words that tend to co-occur across the corpus, finding patterns of which words occur togrther across the headlines in the corpus.</p>
+<p>Because this stage of the analysis was primarily exploratory and intended to guide the later supervised model, I chose to group the terms into an arbitrary ten topics.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>      Topic 1   Topic 2     Topic 3      Topic 4     Topic 5       Topic 6 
+ [1,] "trump"   "leader"    "israel"     "attack"    "israel"      "us"    
+ [2,] "us_news" "face"      "say"        "strike"    "palestinian" "war"   
+ [3,] "hous"    "presid"    "un"         "border"    "gaza"        "israel"
+ [4,] "gop"     "antisemit" "us"         "hezbollah" "aid"         "iran"  
+ [5,] "vote"    "elect"     "peac"       "iran"      "west_bank"   "talk"  
+ [6,] "end"     "nation"    "critic"     "lebanon"   "fear"        "take"  
+ [7,] "school"  "china"     "want"       "offici"    "world"       "shift" 
+ [8,] "speaker" "back"      "washington" "kill"      "hospit"      "get"   
+ [9,] "senat"   "colleg"    "group"      "conflict"  "civilian"    "home"  
+[10,] "parti"   "now"       "blinken"    "target"    "isra"        "use"   
+      Topic 7     Topic 8     Topic 9   Topic 10    
+ [1,] "biden"     "hama"      "protest" "gaza"      
+ [2,] "democrat"  "world-wid" "state"   "isra"      
+ [3,] "netanyahu" "plan"      "campus"  "world_news"
+ [4,] "ukrain"    "fight"     "amid"    "war"       
+ [5,] "polit"     "israel"    "student" "us"        
+ [6,] "deal"      "show"      "univers" "first"     
+ [7,] "alli"      "harri"     "tension" "forc"      
+ [8,] "campaign"  "american"  "test"    "death"     
+ [9,] "make"      "call"      "polic"   "militari"  
+[10,] "call"      "hostag"    "jewish"  "year"      </code></pre>
+</div>
+</div>
+<p>From the unsupervised LDA model, I identified several coherent topics many of which centered around the United States and its domestic politics or foreign policy. As an example, Topics 1, 3, 6, and 7 included terms that pointed toward American political debates and policy responses. Similarly, Topics 2 and 9 were dominated by terms related to student protests within the United States.</p>
+<p>Only two of the ten topics focused directly on the Israel–Hamas conflict without a strong U.S. framing. Topic 4 captured Israel’s external conflicts and regional military engagements, with words such as “Lebanon,” “Hezbollah,” “kill,” and “target.” Topic 5 highlighted humanitarian concerns, with terms like “aid,” “world,” and “civilian,” but without strong emphasis on the violence or death toll itself.</p>
+<p>Taken together, these findings suggest a consistent framing pattern to previous findings, with the non-Isreali actors in conflicts involving Israel are often described through the language of violence and military action, whereas references to Gaza when mentioned alongside Isreal leaned toward humanitarian narratives. This distinction echoes trends observed in the earlier descriptive analyses, reinforcing the idea that media coverage presents Israeli actions as militarily aggressive while framing Gaza primarily through humanitarian crisis.</p>
+</section>
+<section id="supervised-machine-learning-model-results" class="level3">
+<h3 class="anchored" data-anchor-id="supervised-machine-learning-model-results">Supervised Machine Learning Model Results</h3>
+<p>To assess how headlines frame the Israel–Hamas conflict more specifically, I used a seeded LDA model. Unlike the fully unsupervised model, which groups the terms without any input, seeded LDA uses theory-driven “seed” word lists to guide topic toward predefined framing categories. The model still learns from the full corpus, taking the given seeded list and pulling in additional words that frequently co-occur with the given terms.</p>
+<p>Framing categories:</p>
+<ul>
+<li><p>Victimization: language emphasizing harm and suffering (victims, massacres, injuries, civilians, children, hospitals, displacement).</p></li>
+<li><p>Aggression: language emphasizing offensive or kinetic action (attacks, invasions, terrorists, bombs, raids, airstrikes, assaults, rockets).</p></li>
+<li><p>Resistance: language emphasizing opposition and struggle (resistance, uprisings, liberation, intifada, freedom fighters).</p></li>
+<li><p>Terrorism: language labeling actors or acts as extremist or jihadist (terrorism, militants, extremists, jihadists).</p></li>
+<li><p>Legitimacy/Illegitimacy: language about sovereignty, legality, and territorial claims (occupation, illegality, settlements, sovereignty, international law).</p></li>
+<li><p>Diplomacy/De-escalation: language about conflict resolution (ceasefire, peace, negotiations, diplomacy, truces, mediation).</p></li>
+<li><p>Humanitarian: language about relief and civilian well-being (aid, refugees, blockades, sieges, famine, ambulances, evacuations).</p></li>
+</ul>
+<p>For each headline, the model estimates a probability distribution over these frames, giving each headline a percentage for each given category. I interpret results along two dimensions, the first being examining vocabulary expansion and the seccond prevelance of each topic. For vocabulary expansion, I examine the top learned terms per topic show how the press actually instantiates each frame in the corpus. For prevalence I show the share of headlines (or average per-headline probability mass) associated with each frame overall and within the flagged categories of Israeli or Palestinian indicators.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>      victimization aggression   resistance  terrorism    legitimacy  
+ [1,] "gaza"        "attack"     "protest"   "world-wid"  "us"        
+ [2,] "hama"        "israel"     "state"     "israel"     "israel"    
+ [3,] "isra"        "iran"       "antisemit" "war"        "netanyahu" 
+ [4,] "palestinian" "us"         "campus"    "now"        "plan"      
+ [5,] "civilian"    "hama"       "student"   "american"   "biden"     
+ [6,] "hostag"      "bomb"       "call"      "polit"      "world_news"
+ [7,] "israel"      "strike"     "school"    "america"    "ukrain"    
+ [8,] "gazan"       "raid"       "leader"    "make"       "deal"      
+ [9,] "fear"        "hezbollah"  "univers"   "turn"       "cease-fir" 
+[10,] "west_bank"   "lebanon"    "colleg"    "middl_east" "talk"      
+[11,] "world"       "assault"    "jewish"    "year"       "border"    
+[12,] "famili"      "world_news" "polic"     "need"       "meet"      
+[13,] "hospit"      "kill"       "us_news"   "chang"      "effort"    
+[14,] "world_news"  "forc"       "chicago"   "review"     "isra"      
+[15,] "return"      "iranian"    "harvard"   "want"       "blinken"   
+      diplomacy    humanitarian
+ [1,] "biden"      "aid"       
+ [2,] "trump"      "war"       
+ [3,] "democrat"   "news_brief"
+ [4,] "harri"      "us"        
+ [5,] "elect"      "amid"      
+ [6,] "hous"       "global"    
+ [7,] "gop"        "rise"      
+ [8,] "vote"       "say"       
+ [9,] "republican" "risk"      
+[10,] "campaign"   "biden"     
+[11,] "presid"     "busi"      
+[12,] "senat"      "use"       
+[13,] "speaker"    "stop"      
+[14,] "truce"      "grow"      
+[15,] "voter"      "china"     </code></pre>
+</div>
+</div>
+<p>These expansions suggest that the media frames Israeli-referencing headlines more often through Aggression and Legitimacy, emphasizing military action and state authority. That said, its inclusion in aggression is alongside actors other than Hamas, reinforcing the pattern that aggression and violence is being covered in the countries affairs outside of Gaza. Additionally, it showed that categories which might be assumed to be used in the context of resistance in Gaza or the role Hamas plays in being a terrorist organization gets downed out by American centered headlines, such as the student movement for resistance and a broader middle-eastern framing for terrorism.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pol290g_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To explore the prevalence across groups, I graphed the average framing probabilities by term of headlines. Headlines flagged only Palestinians as well as both Israelis and Palestinians scored highest on the Victimization frame, consistent with an emphasis on civilian harm and humanitarian suffering. This also supports the idea that Palestinian harm and suffering is qualified by Israeli harm (specifically with the events on October 7th).</p>
+<p>Aside from the large spikes in legitimacy, the majority of the averages had only small differences. Headlines mentioning only Israelis were more likely to be framed through Aggression and Legitimacy, highlighting military action and questions of state authority. Headlines mentioning neither actor explicitly were comparatively more likely to emphasize Diplomacy and Resistance, suggesting these narratives were often decoupled from direct references to either Israel or Palestinians, likley due to an American focus.</p>
+<p>Together, these distributions reinforce the broader trend seen throughout the paper, with Israel being framed more often through aggression and legitimacy, while Gaza/Palestinians are framed more often through victimization and humanitarian crisis. The “both” group sits in between, whereas “neither” headlines shift toward political process and protest language.</p>
+</section>
+<section id="bag-of-words" class="level3">
+<h3 class="anchored" data-anchor-id="bag-of-words">Bag of Words:</h3>
+<p>To expand on the analysis validate the framing patterns, I developed a manual coding scheme and conducted a human-coding alongisde a bag-of-words grouping. A list of terms was compiled for each bias category, and word frequencies were examined across the corpus to flag potentially biased headlines. From these flagged headlines, I selected a subset for manual classification by two independent coders. The goal was to assess whether human judgments aligned with the computational model and to evaluate the clarity of the coding scheme.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pol290g_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The flagged term analysis reveals a clear imbalance in how bias-indicative language appears across headlines. As shown above, terms associated with the Neutral/Conflict category dominate the corpus, appearing 1,173 times, far greater either sided terms. By contrast, Pro-Israel terms appeared 387 times, while Pro-Palestine terms appeared only 216 times.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project_data/pol290G/table1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This can further be seen with the breakdown of the top terms within each group, with Pro-Palestinain terms such as genocide or dicplacement being far lower in count than October 7th or Terror. As well, these Pro-Palestinan terms of violence which depict the disprotportionate death toll during the conflict are significantly less common than neutral terms such such as war, fight, and conflict.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="pol290g_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure above shows a asymmetry in the frequency of bias-indicative terms between the two groups. Headlines flagged with Israeli references contained a much larger share of Pro-Israel terms than Pro-Palestine terms, indicating a bias toward Israeli perspectives when the actor is named explicitly. In contrast, headlines flagged with Palestinian references did not exhibit a similar skew toward Pro-Palestine terms. Instead, these headlines relied more heavily on Neutral conflict language or humanitarian descriptors, underscoring the earlier finding that Palestinian actors are less often framed through partisan terms and more often through generalized or humanitarianized language.</p>
+</section>
+<section id="intercoder-reliability" class="level3">
+<h3 class="anchored" data-anchor-id="intercoder-reliability">Intercoder Reliability:</h3>
+<p>To confirm the reliability of the bag-of-words approach, I conducted a human-coding exercise. The initial dictionary method flagged headlines as potentially biased based on the frequency of Pro-Israel, Pro-Palestine, or Neutral terms. To evaluate the validity of these automated flags, two independent human coders reviewed a random subset of the flagged headlines. The following was used as a codebook for the human coders.</p>
+<p>Category 1: Pro-Israel</p>
+<ul>
+<li>Definition: Headlines legitimize Israeli actions, emphasize Israeli security or victimhood, or portray Palestinians negatively.</li>
+<li>Key Cues: The use of the passive voice, “self-defense,” “retaliation,” “security,” “terrorism/terrorist,” “Hamas,” “hostages,” “massacre.”</li>
+<li>Examples: Israel, Israeli, Jewish, Netanyahu, Tel Aviv, Jerusalem, Oct.&nbsp;7.</li>
+</ul>
+<p>Category 2: Pro-Palestine</p>
+<ul>
+<li>Definition: Headlines highlight Palestinian suffering, criticize Israeli actions, or frame Palestinian resistance as an appropriate response to agression.</li>
+<li>Key Cues: “occupation,” “settlement,” “blockade,” “siege,” “humanitarian crisis,” “refugee,” “genocide,” “apartheid.”</li>
+<li>Examples: Palestine, Palestinian, Gaza, Rafah, West Bank, resistance, humanitarian.</li>
+</ul>
+<p>Category 3: Neutral</p>
+<ul>
+<li>Definition: Headlines report events factually or in balanced terms without clear bias.</li>
+<li>Key Cues: “conflict,” “war,” “clash,” “casualties,” “diplomacy,” “ceasefire,” “UN,” “US.”</li>
+<li>Examples: conflict, fighting, injured, crisis, solution.</li>
+</ul>
+<p>Decision Rules (for ambiguous cases):</p>
+<ul>
+<li>Code by the dominant frame if one side is emphasized.</li>
+<li>If no strong bias is present → Neutral.</li>
+<li>If framing is balanced/mixed → Neutral.</li>
+<li>If no relevant terms appear → Neutral.</li>
+</ul>
+<p><strong>Coding Results</strong></p>
+<p>Using the condensed codebook, two independent coders classified a subset of flagged headlines. The intercoder reliability scores indicate a high level of consistency:</p>
+<ul>
+<li>Average pairwise agreement: 83.3%</li>
+<li>Krippendorff’s alpha: 0.746</li>
+<li>Average pairwise Cohen’s kappa: 0.75</li>
+</ul>
+<p>All three measures score above the 0.70 threshold needed to be confident in the coder reliability, further reinforcing the methods used to analyze the corpus as a whole.</p>
+</section>
+<section id="conclusion" class="level3">
+<h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
+<p>Overall, the analyses did not provide sufficient evidence to reject the null hypothesis. While many of the results revealed small differences in framing, these differences were not consistently large enough to reach conventional levels of statistical significance. However, several of the observed patterns remain theoretically meaningful and warrant further exploration. Future work should test the statistical robustness of these differences, ideally with larger samples and extended time frames, to assess whether the trends identified here hold under more rigorous conditions.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Luca Alioto</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

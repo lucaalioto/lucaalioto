@@ -7,14 +7,15 @@ title: "Projects & Research"
 \*Working papers available upon request
 
 -   Exploring the Affordability, Accessibility, and Transportation-Related Effects of Accessory Dwelling Units in Sacramento — Co-Author with [Dr. Jamey Volker](https://its.ucdavis.edu/people/jamey-volker)
+-   Honors Thesis: Violence, Democratic Trust, and Authoritarianism in the Bukele Era — Thesis Advisor [Dr. Juan Tellez](https://ps.ucdavis.edu/people/juan-tellez)
 
 ### Class Projects
 
 -   [Economic Conditions and Populist Support: County-Level Evidence from the 2016 U.S. Presidential Election](pol212.qmd) — POL 212: Political Science Methods, Winter 2025
 
--   Headline Framing in U.S. Coverage of the Israel–Hamas War: A Text-as-Data Approach — POL 290G: Computational Text Analysis, Spring 2025
+-   [Headline Framing in U.S. Coverage of the Israel–Hamas War: A Text-as-Data Approach](pol290g.qmd) — POL 290G: Computational Text Analysis, Spring 2025
 
-### Conferences & Presentations 
+### Conferences & Presentations
 
 -   Association of Collegiate Schools of Planning (2025) in Minneapolis
 

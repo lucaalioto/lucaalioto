@@ -1,7 +1,7 @@
 ---
 title: "Luca Alioto"
 subtitle: "Undergraduate Student <br> Political Science & Community Development <br> University of California, Davis <br> ✉️ [jalioto@ucdavis.edu](mailto:jalioto@ucdavis.edu)"
-image: /img/baby.jpg
+image: img/baby.jpg
 toc: false
 about: 
   template: trestles
@@ -10,27 +10,23 @@ about:
   links:
     - icon: github 
       text: Github
-      href: https://github.com/hail2thief
+      href: https://github.com/lucaalioto
     - icon: CV
       text: CV
-      href: https://www.dropbox.com/scl/fi/ya07jp8owfvodqcpssccf/cv-tellez.pdf?rlkey=zww0gyatdvgsxmh43n3kn0883&dl=0
-    - icon: mortarboard-fill
-      text: Google Scholar
-      href: https://scholar.google.com/citations?user=CtLI42kAAAAJ&hl=en
+      href: https://drive.google.com/file/d/1pTMnGRbnpHMQo4VeXwNEM54j_zLcJEkC/view?usp=sharing
 ---
 
 ### Bio
 
-I’m an associate professor of political science at [The University of California, Davis](https://ps.ucdavis.edu/) where I [research](/research.html) and [teach](/teaching.html) on security, development, and research methods. In my research I often work with governments, international donors, and their implementing partners to improve the design and evaluation of development programming around the world. 
+Hello! My name is Luca, and I am a 4th-year Political Science and Community Development major at the University of California, Davis. My research interests include housing and transportation accessibility and affordability, democratic backsliding, inequality, mass incarceration, media coverage of conflict, and other things of the sort.
 
-I was born in Cali, Colombia, grew up in Cali/South Florida, and have lived in Texas, North Carolina, South Carolina, and now California. 
-
+Feel free to contact me at jalioto@ucdavis.edu
 
 ### Education
 
-<p class="custom-subtitle"> {{<fa graduation-cap>}} **BA in Political Science and BS in Community & Regional Development** | University of California, Davis </p>  
+<p class="custom-subtitle"> **BA in Political Science and BS in Community & Regional Development** | University of California, Davis </p>  
 </div>
 
 ### Research interests
 
-Armed conflict | Development 
+Democratic backsliding | Housing | Mass incarceration | Media coverage of conflict | Transportation | Urban economics | Urban planning & policy

@@ -28,16 +28,9 @@ I was born in Cali, Colombia, grew up in Cali/South Florida, and have lived in T
 
 ### Education
 
-<div class="topbr">
-<p class="custom-subtitle"> {{< fa graduation-cap >}} **PhD in Political Science, 2019** | Duke University</p>  
-
-<p class="custom-subtitle">{{< fa graduation-cap >}} **MA in Political Science, 2016** | Duke University</p>  
-
-
-<p class="custom-subtitle"> {{< fa graduation-cap >}} **BA in Political Science, 2013** | University of Florida </p>  
+<p class="custom-subtitle"> {{<fa graduation-cap>}} **BA in Political Science and BS in Community & Regional Development** | University of California, Davis </p>  
 </div>
-
 
 ### Research interests
 
-Armed conflict | Development | Security
+Armed conflict | Development 

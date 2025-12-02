@@ -15,6 +15,8 @@ title: "Projects & Research"
 
 -   [Headline Framing in U.S. Coverage of the Israel–Hamas War: A Text-as-Data Approach](pol290g.qmd) — POL 290G: Computational Text Analysis, Spring 2025
 
+-   [Gentrification in the Bay Area](https://storymaps.arcgis.com/stories/893d99691b7d4c2e9e1043bf7daab767) — CRD 150: Quantitative Methods in Community Research, Winter 2024
+
 ### Conferences & Presentations
 
 -   Association of Collegiate Schools of Planning (2025) in Minneapolis

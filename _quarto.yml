@@ -3,7 +3,7 @@ project:
   output-dir: docs
   
 website:
-  title: "MY WEB SITE"
+  title: "Luca Alioto"
   navbar:
     left:
       - href: index.qmd
@@ -13,15 +13,17 @@ website:
       - icon: twitter
         href: https://twitter.com/
       - icon: github
-        href: https://github.com/YOURUSERNAME/YOURREPO
+        href: https://github.com/lucaalioto
   page-footer:
     right: "Built with [Quarto](https://quarto.org/)"
-    left: "&copy; Copyright 2023, YOUR NAME"
+    left: "Luca Alioto"
 
 format:
   html:
-    theme: cerulean
+    theme:
+      - sandstone
+      - html/custom.scss
     toc: true
-
+    highlight-style: monokai
+    
 editor: source
-

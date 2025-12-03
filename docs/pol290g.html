@@ -127,7 +127,6 @@ window.Quarto = {
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
-    <a href="https://twitter.com/" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-twitter"></i></a>
     <a href="https://github.com/lucaalioto" title="" class="quarto-navigation-tool px-1" aria-label=""><i class="bi bi-github"></i></a>
 </div>
       </div> <!-- /container-fluid -->
@@ -142,11 +141,11 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">1 Introduction</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#hypothesies-and-motivations" id="toc-hypothesies-and-motivations" class="nav-link" data-scroll-target="#hypothesies-and-motivations">Hypothesies and Motivations</a></li>
-  <li><a href="#corpus-and-data-source" id="toc-corpus-and-data-source" class="nav-link" data-scroll-target="#corpus-and-data-source">2 Corpus and Data Source</a></li>
-  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">3 Methodology</a></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">4 Results</a>
+  <li><a href="#corpus-and-data-source" id="toc-corpus-and-data-source" class="nav-link" data-scroll-target="#corpus-and-data-source">Corpus and Data Source</a></li>
+  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">Methodology</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
   <ul class="collapse">
   <li><a href="#word-frequencies-by-group" id="toc-word-frequencies-by-group" class="nav-link" data-scroll-target="#word-frequencies-by-group">Word Frequencies by Group</a></li>
   <li><a href="#tf-idf" id="toc-tf-idf" class="nav-link" data-scroll-target="#tf-idf">TF-IDF</a></li>
@@ -184,7 +183,7 @@ window.Quarto = {
 
 
 <section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">1 Introduction</h2>
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>Scholars and media critics have argued that U.S. newspaper coverage of the Israel–Palestine conflict has long reflected a systemic bias in favor of Israel and against Palestinians — a trend that critics claim has been exacerbated since the attacks on October 7th. This critique is rooted in both the language used and the structural absences in how events are reported, most notably the reporting of Palestinian deaths at the hands of the Israeli government. Mearsheimer and Walt (2007) argue in The Israel Lobby that “the American media’s coverage of Israel tends to be strongly biased in Israel’s favor,” a claim echoed by Rashid Khalidi (2021) in The Hundred Years’ War on Palestine, which documents consistent anti-Palestinian framing in prominent outlets like The New York Times. Bazian (2015) further situates anti-Palestinian media narratives within broader Islamophobic currents in U.S. mainstream discourse.</p>
 <p>In their passage in Blaming the Victims (2001), Edward Said and Noam Chomsky argue that Orientalist assumptions continue to shape how Palestinian violence is reported — with events often being stripped of historical or humanitarian context while Israeli state violence is either omitted or framed as justified defense. They contest that media narratives routinely cast Palestinians as instigators and Israelis as defenders, even when the opposite may be true.</p>
 <p>Research surrounding conflict in the region, such as the first and second intifada, as well as research without temporal constraints, have made similar claims of U.S. media coverage tending to disproportionately emphasize Israeli perspectives and narratives. As an example, Zelizer et al.&nbsp;(2002) found that The New York Times tended to portray Israelis as victims and Palestinians as aggressors in its headlines, and Ackerman (2001) observed a “systematic absence of context” in U.S. coverage of Palestinian suffering.</p>
@@ -207,14 +206,14 @@ H_1\text{: There is a systematic difference in the language used to describe Isr
 <p>The latent variable of interest is media framing bias, which I define here as the implicit patterns in journalistic language that portray one group as more legitimate, victimized, aggressive, or responsible than the other. While existing literature suggests that the absence of linguistic asymmetry in coverage of the Israel–Palestine conflict can obscure the effect of the disproportionate death toll and destruction inflicted by the Israeli military, this paper does not evaluate omissions or false equivalencies. Instead, it focuses solely on assessing the language that is present in mainstream coverage during the period of analysis.</p>
 </section>
 <section id="corpus-and-data-source" class="level2">
-<h2 class="anchored" data-anchor-id="corpus-and-data-source">2 Corpus and Data Source</h2>
+<h2 class="anchored" data-anchor-id="corpus-and-data-source">Corpus and Data Source</h2>
 <p>To construct the corpus for analysis, I used the ProQuest U.S. Major Dailies database to retrieve news article headlines published within the year following the beginning of the conflict, between October 7, 2023 and October 7, 2024. In the ProQuest database, I searched for articles containing references to the conflict using a Boolean query that captured both geographic and conflict-related keywords. The following search was used to retrieve relevant articles from the ProQuest U.S. Major Dailies database:</p>
 <p>(“Israel” OR “Palestine” OR “Gaza” OR “Hamas” OR “West Bank” OR “Israel-Hamas” OR “Israel-Gaza”) AND (“war” OR “conflict” OR “attack” OR “bombing” OR “ceasefire” OR “hostage” OR “invasion” OR “crisis” OR “aid”) AND LA(english)</p>
 <p>From this I created a corpus with an n of 10,861 articles that were published in the U.S. Major Dailies collection during the specified time period. The search was designed to capture a wide range of articles related to the Israel–Palestine conflict, restricted to articles in English and to the following newspapers: <em>The New York Times</em>, <em>Washington Post</em>, <em>Los Angeles Times</em>, <em>Wall Street Journal</em>, <em>Boston Globe</em>, <em>Chicago Tribune</em>, <em>San Francisco Chronicle</em>, among others included in the U.S. Major Dailies collection. I further filtered the results to include only relevant article types, including only news reports, editorials, commentaries, and features, while excluding obituaries, multimedia clips, and corrections. The resulting dataset represents a curated collection of mainstream media coverage of the Israel–Palestine conflict during the defined time period.</p>
 <p>Unfortunately, due to most newspapers’ terms and conditions on data scraping, the original source data cannot be shared from ProQuest TDM Studio.</p>
 </section>
 <section id="methodology" class="level2">
-<h2 class="anchored" data-anchor-id="methodology">3 Methodology</h2>
+<h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
 <p>Once collected, the articles were pre-processed in R using the <code>quanteda</code> package. The unit of analysis was the paragraph, which allowed for finer-grained comparisons of framing within individual documents. After constructing a corpus, I applied a series of standard pre-processing steps summarized by the acronym <strong>P-N-L-W-S-C</strong>:</p>
 <ul>
 <li><strong>P</strong> – Removed punctuation and symbols to clean the text and reduce noise.</li>
@@ -236,7 +235,7 @@ H_1\text{: There is a systematic difference in the language used to describe Isr
 <p>Finally, I constructed a smaller dictionary categorizing headline terms as Israeli-related, Palestinian-related, or neutral. I counted the frequency of these tags in headlines and compared the distribution to my own bias coding, using the proportion of conflict terms present in each category. This comparison enabled a rough check of how headline framing aligned with broader sentiment and topic patterns in the full-text articles.</p>
 </section>
 <section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">4 Results</h2>
+<h2 class="anchored" data-anchor-id="results">Results</h2>
 <section id="word-frequencies-by-group" class="level3">
 <h3 class="anchored" data-anchor-id="word-frequencies-by-group">Word Frequencies by Group</h3>
 <p>To explore differences in how Israeli and Palestinian actors are framed, I analyzed the most frequent terms in headlines tagged as referencing each group.</p>

@@ -1,7 +1,7 @@
 ---
 title: "Luca Alioto"
 subtitle: "Undergraduate Student <br> Political Science & Community Development <br> University of California, Davis <br> ✉️ [jalioto@ucdavis.edu](mailto:jalioto@ucdavis.edu)"
-image: img/baby.jpg
+image: img/chavez.jpg
 toc: false
 about: 
   template: trestles

@@ -26,9 +26,9 @@ library(gridExtra)
 library(here)
 
 #read in data
-election = read_csv(here("project_data/pol212/01_data/countypres_2000-2020.csv"))
-gdp = read_csv(here("project_data/pol212/01_data/CAGDP1__ALL_AREAS_2001_2023.csv"))
-gallup = readRDS(here("project_data/pol212/01_data/combined2_proj.rds"))
+election = read_csv(here("data/pol212/01_data/countypres_2000-2020.csv"))
+gdp = read_csv(here("data/pol212/01_data/CAGDP1__ALL_AREAS_2001_2023.csv"))
+gallup = readRDS(here("data/pol212/01_data/combined2_proj.rds"))
 ```
 
 ```{r, include=FALSE}
@@ -255,7 +255,7 @@ The **mechanism** linking economic conditions to Trump support can be conceptual
     -   Prior GOP support, 2012 election: Controlling for past Republican vote share accounts for historical partisanship.
 
 ```{r, echo=FALSE, out.width="60%", fig.cap="Directed Acyclic Graph (DAG)", fig.align = 'center', fig.pos='H'}
-knitr::include_graphics(here("project_data/pol212/03_figures/dag.png"))
+knitr::include_graphics(here("data/pol212/03_figures/dag.png"))
 ```
 
 Mathematically, the relationship between the Explanatory and Outcome can be represented as:
@@ -560,7 +560,7 @@ stargazer(model1, model2, model3, model4, type = "text",
 ```
 
 ```{r, echo=FALSE, out.width="70%", fig.align = 'center'}
-knitr::include_graphics(here("project_data/pol212/03_figures/table1.png"))
+knitr::include_graphics(here("data/pol212/03_figures/table1.png"))
 ```
 
 The initial model establishes the effect of Positive Change in GDP on Trump Vote Share without any controls. In this model, the coefficient for Positive Change in GDP is negative and statistically significant, indicating that counties experiencing economic improvement were less likely to support Trump, supporting the Economic Conditions Hypothesis ($H_1$).
@@ -646,7 +646,7 @@ stargazer(reg4, reg4_clean, type = "html",
 ```
 
 ```{r, echo=FALSE, out.width="70%", fig.align = 'center'}
-knitr::include_graphics(here("project_data/pol212/03_figures/table2.png"))
+knitr::include_graphics(here("data/pol212/03_figures/table2.png"))
 ```
 
 The Residual analysis confirmed that the linear model specification was mostly appropriate, though minor deviations and outliers existed within the data. The Cook’s Distance analysis identified a small number of high-leverage counties that disproportionately influenced the model. After removing these influential observations and re-estimating the regression, the coefficients remained stable, confirming that the results were not driven by a few outliers.

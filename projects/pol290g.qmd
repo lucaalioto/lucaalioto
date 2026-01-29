@@ -25,7 +25,7 @@ require(seededlda)
 library(here)
 
 # read csv
-metadata = read.csv(here("project_data/pol290G/extended.csv"))
+metadata = read.csv(here("data/pol290G/extended.csv"))
 ```
 
 
@@ -470,7 +470,7 @@ ggplot(term_counts_df, aes(x = reorder(Category, Count), y = Count, fill = Categ
 The flagged term analysis reveals a clear imbalance in how bias-indicative language appears across headlines. As shown above, terms associated with the Neutral/Conflict category dominate the corpus, appearing 1,173 times, far greater either sided terms. By contrast, Pro-Israel terms appeared 387 times, while Pro-Palestine terms appeared only 216 times.
 
 ```{r jpeg, echo=FALSE, fig.align='center', out.width="60%"}
-knitr::include_graphics(here("project_data/pol290G/table1.png"))
+knitr::include_graphics(here("data/pol290G/table1.png"))
 ```
 
 This can further be seen with the breakdown of the top terms within each group, with Pro-Palestinain terms such as genocide or dicplacement being far lower in count than October 7th or Terror. As well, these Pro-Palestinan terms of violence which depict the disprotportionate death toll during the conflict are significantly less common than neutral terms such such as war, fight, and conflict. 

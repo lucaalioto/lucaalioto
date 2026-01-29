@@ -11,9 +11,9 @@ title: "Projects & Research"
 
 ### Class Projects
 
--   [Economic Conditions and Populist Support: County-Level Evidence from the 2016 U.S. Presidential Election](pol212.qmd) — POL 212: Political Science Methods, Winter 2025
+-   [Economic Conditions and Populist Support: County-Level Evidence from the 2016 U.S. Presidential Election](projects/pol212.qmd) — POL 212: Political Science Methods, Winter 2025
 
--   [Headline Framing in U.S. Coverage of the Israel–Hamas War: A Text-as-Data Approach](pol290g.qmd) — POL 290G: Computational Text Analysis, Spring 2025
+-   [Headline Framing in U.S. Coverage of the Israel–Hamas War: A Text-as-Data Approach](projects/pol290g.qmd) — POL 290G: Computational Text Analysis, Spring 2025
 
 -   [Gentrification in the Bay Area](https://storymaps.arcgis.com/stories/893d99691b7d4c2e9e1043bf7daab767) — CRD 150: Quantitative Methods in Community Research, Winter 2024
 

@@ -7,18 +7,19 @@ title: "Projects & Research"
 \*Working papers available upon request.
 
 -   Exploring the Affordability, Accessibility, and Transportation-Related Effects of Accessory Dwelling Units in Sacramento — Co-Author with [Dr. Jamey Volker](https://its.ucdavis.edu/people/jamey-volker)
--   Honors Thesis: Violence, Democratic Trust, and Authoritarianism in the Bukele Era — Thesis Advisor [Dr. Juan Tellez](https://ps.ucdavis.edu/people/juan-tellez)
 
-### Class Projects
+### Projects
 
--   [Economic Conditions and Populist Support: County-Level Evidence from the 2016 U.S. Presidential Election](projects/pol212.qmd) — POL 212: Political Science Methods, Winter 2025
+-   Honors Thesis: [Popular Support for Democratic Backsliding: Performance Legitimacy and Selective Accountability in El Salvador](projects/hthesis/hthesis.qmd) — Thesis Advisor [Dr. Juan Tellez](https://ps.ucdavis.edu/people/juan-tellez)
 
--   [Headline Framing in U.S. Coverage of the Israel–Hamas War: A Text-as-Data Approach](projects/pol290g.qmd) — POL 290G: Computational Text Analysis, Spring 2025
+-   [Headline Framing in U.S. Coverage of the Israel–Hamas War: A Text-as-Data Approach](projects/pol290g/index.qmd) — POL 290G: Computational Text Analysis, Spring 2025
+
+-   [Economic Conditions and Populist Support: County-Level Evidence from the 2016 U.S. Presidential Election](projects/pol212/index.qmd) — POL 212: Political Science Methods, Winter 2025
 
 -   [Gentrification in the Bay Area](https://storymaps.arcgis.com/stories/893d99691b7d4c2e9e1043bf7daab767) — CRD 150: Quantitative Methods in Community Research, Winter 2024
 
 ### Conferences & Presentations
 
 -   Association of Collegiate Schools of Planning (2025) in Minneapolis
+-   Undergraduate Research Conference (2026) UC Davis
 
-### 

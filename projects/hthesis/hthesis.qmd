@@ -1,0 +1,1462 @@
+---
+title: "Popular Support for Democratic Backsliding: Performance Legitimacy and Selective Accountability in El Salvador"
+author: "Luca Alioto"
+date: 2026-03-20
+
+abstract: |
+  The global wave of democratic backsliding has prompted debate over whether regime support during democratic erosion is driven by economic performance or by leader-level institutional manipulation. Both sides of this debate operationalize "delivery" primarily in economic terms, leaving open the question of whether other metrics of state performance maintain citizen tolerance for democratic erosion. This paper addresses that gap by examining the micro-level mechanisms of incumbent support in El Salvador under President Nayib Bukele, where security delivery, rather than economic performance, has become the primary basis of regime legitimacy. Using individual-level data from the 2021 LAPOP AmericasBarometer ($N = 1{,}435$), I estimate logistic regression models that disaggregate victimization by source to test whether citizens apply different accountability logics to different domains of state performance. I find that victims of gang extortion are significantly less likely to support Bukele ($\beta = -0.476, p < 0.05$), treating continued insecurity as a specific policy failure rather than an accelerator for authoritarian demand. Victims of state bribery show no significant decrease in support, suggesting the incumbent is largely insulated from the reputational costs of institutional abuse. Economic perception operates as a strong independent predictor of support but does not formally moderate the victimization-support relationship, indicating that security accountability and economic satisfaction function as parallel rather than interactive mechanisms. These findings challenge both the "iron fist" thesis, that victimization drives demand for authoritarianism, and the assumption that performance legitimacy is a solely economic phenomenon. Instead, they reveal a pattern of selective accountability in which citizens narrow the scope of evaluation to the single domain that motivated the incumbent's rise, effectively giving the state leeway in all others.
+
+format:
+  html:
+    theme: default
+    toc: true
+    number-sections: false
+    embed-resources: true
+    code-fold: false
+    include-in-header:
+      text: |
+        <style>
+          body {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 12pt;
+            line-height: 2;
+          }
+          p {
+            text-indent: 2em;
+          }
+          .quarto-title-meta,
+          .quarto-title-block .abstract {
+            line-height: 1.3;
+          }
+          .quarto-title-block .abstract p 
+          h1 + p,
+          h2 + p,
+          h3 + p,
+          h4 + p {
+            text-indent: 0;
+          }
+        </style>
+
+execute:
+  echo: false
+  warning: false
+  message: false
+
+bibliography: ref.bib
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(here)
+## opts_knit$set(root.dir = here::here("hthesis"))
+```
+
+```{r, include=FALSE}
+# Load necessary libraries
+library(tidyverse)
+library(dplyr)
+library(labelled)
+library(kableExtra)
+library(sjlabelled)
+library(stringr)
+library(haven)
+library(readxl)
+library(stargazer)
+library(broom)
+library(gt)
+library(ggplot2)
+library(patchwork)
+library(ggeffects)
+
+LAPOP <- haven::read_dta(here("projects/hthesis/data/SLV_2021_LAPOP.dta")) # Public Opinion data from 2021
+
+LAPOP_A = LAPOP %>%
+  filter(core_a_core_b == "Core A") # Group A respondents
+```
+
+```{r}
+
+# Helper Function to remove LAPOP "Junk" codes
+clean_lapop <- function(x) {
+  case_when(
+    x %in% c(888888, 988888, 999999) ~ NA_real_,
+    TRUE ~ as.numeric(x)
+  )
+}
+
+LAPOP_Model <- LAPOP_A %>%
+  select(
+    m1,       # B: DV - Bukele Approval
+    vicbar4a, # Ex: IV - Extortion
+    idio2,    # Ec: Moderator - Econ Perception
+    edr,       # Inc (Proxy): Education Years
+    ur1new,   # U: Confounder - Urban
+    exc7,     # C: Control - Corruption Perception
+    exc6,
+    sgl1      # W (Proxy): Municipal Services
+  ) %>%
+  
+ 
+  mutate(across(everything(), clean_lapop)) %>%
+  
+  # Step B: Create Analysis Variables
+  mutate(
+    # --- DV: Bukele Support (B) ---
+    # 1=Support (Very Good/Good), 0=No Support (Regular/Bad/Very Bad)
+    bukele_support = case_when(
+      m1 %in% c(1, 2) ~ 1,
+      m1 %in% c(3, 4, 5) ~ 0,
+      TRUE ~ NA_real_
+    ),
+    
+    # --- IV: Extortion Victim (Ex) ---
+    # Original: 1=Yes, 2=No -> Recode to 1=Yes, 0=No
+    extortion_victim = case_when(
+      vicbar4a == 1 ~ 1,  # Yes
+      vicbar4a == 0 ~ 0,  # No (The Codebook Value)
+      TRUE ~ NA_real_
+    ),
+    
+    # --- Moderator: Econ Perception (Ec) ---
+    # Original: 1=Better, 2=Same, 3=Worse
+    # REVERSE CODE: 3=Better, 2=Same, 1=Worse 
+    # (Higher number = Better economy, making the interaction intuitive)
+    econ_perception = case_when(
+      idio2 == 1 ~ 3,
+      idio2 == 2 ~ 2,
+      idio2 == 3 ~ 1,
+      TRUE ~ NA_real_
+    ),
+    
+    # --- Proxy for Income (Inc): Education ---
+    # Continuous variable (Years of schooling)
+    
+    # --- Confounder: Urban (U) ---
+    # 1/2 = Urban, 3/4 = Rural -> Recode to 1=Urban, 0=Rural
+    is_urban = case_when(
+      ur1new %in% c(1, 2) ~ 1,
+      ur1new %in% c(3, 4) ~ 0,
+      TRUE ~ NA_real_
+    ),
+    
+    # --- Control: Corruption Perception (C) ---
+    # Original: 1=Very Common ... 4=Uncommon
+    # REVERSE CODE: 4=High Corruption ... 1=Low Corruption
+    corruption_perc = case_when(
+      exc7 == 1 ~ 4,
+      exc7 == 2 ~ 3,
+      exc7 == 3 ~ 2,
+      exc7 == 4 ~ 1,
+      TRUE ~ NA_real_
+    ),
+    
+    edr = edr, # 0 as none 3 as Uni 
+    bribe_victim = exc6, 
+    
+    # --- Proxy for Welfare (W): Muni Services ---
+    muni_services = case_when(
+      sgl1 == 1 ~ 5,
+      sgl1 == 2 ~ 4,
+      sgl1 == 3 ~ 3,
+      sgl1 == 4 ~ 2,
+      sgl1 == 5 ~ 1,
+      TRUE ~ NA_real_
+    ),
+  ) %>% drop_na()
+```
+
+## Introduction
+
+Despite being labeled "authoritarian," regimes such as Viktor Orbán's Hungary, Rodrigo Duterte's Philippines, and Nayib Bukele's El Salvador have operated within democratic structures. While earlier eras of authoritarian reversion were characterized by military coups, executive autogolpes, or the complete suspension of constitutional order, contemporary democratic erosion is an incremental process, led by elected officials who use legal and institutional mechanisms to consolidate power while maintaining the illusion of democracy. [@bermeoDemocraticBacksliding2016; @fukuyamaDeliveringDemocracyWhy2025; @levitskyHowDemocracies2018].
+
+@luhrmannThirdWaveAutocratization2019 define this rise in "illiberal democracy" as the third wave of autocratization, capturing a process of democratic recession, institutional breakdown, and authoritarian consolidation that spans beyond any single political system or ideology. What distinguishes this wave from prior ones is not just the method of erosion, but its political foundation. While not universally true, many of these leaders retain, and often expand, real popular support throughout the process.
+
+Most approaches to understanding democratic decay fall into one of two camps. Supply-side explanations focus on elite behavior and erosion from within, examining high-level institutional change. Demand-side explanations focus on citizens' support, or lack thereof, for democracy. Central to the demand-side argument is performance legitimacy, with scholars contending that regime support is sustained not by procedural fairness or democratic norms, but by the state's perceived ability to deliver tangible outcomes for its citizens. While scholars debate the extent to which economic performance is the primary driver of this dynamic, the literature remains largely focused on GDP growth, poverty reduction, and wealth inequality, leaving open the question of whether other domains of state performance drive citizen tolerance for democratic erosion [@fukuyamaDeliveringDemocracyWhy2025].
+
+In high-violence contexts, the cases suggest the primary mode of delivery may not be economic at all. Parallel literature on punitive security policy documents how citizens exposed to large-scale violence demand authoritarian responses and are willing to trade civil liberties for order. While scholars from both fields have examined demand-side responses to shocks, the disaggregated question of how citizens evaluate different domains of security, economic welfare, institutional integrity through different accountability logics remains unaddressed.
+
+This paper examines that question through the case of El Salvador, a country that has experienced dramatic shifts in both security and economic conditions, each coming at the cost of democratic norms. Under President Nayib Bukele, supply-side shifts have enabled a security and economic delivery that has solidified widespread popular support around the country's newfound status as the "safest country in Latin America" [@velezSalvadorNamedOne2024]. By using El Salvador, this paper is able to explore the dynamics of performance legitimacy by focusing on a case notorious for gaining legitimacy outside of economic measures.
+
+Some believe that the canonizing event in the democratic backsliding of El Salvador began on March 26th, 2022, a day that saw the highest mortality rate in two decades. In the span of 24 hours, sixty-two people were killed in a gang attacks; a violent breakdown in government-gang negotiations [@gellmanDemocracyCrisisSalvador2022]. 81st President Nayib Bukele responded by declaring a “war on gangs,” establishing a State of Exception that suspended the constitutional rights to freedom of assembly, privacy in communications, and due process. In the weeks that followed, military officials were deployed in the streets, and authorities arrested over 8,500 people—a number that would increase to nearly 80,000, or more than 1% of the population, by 2024. As Bukele's response caused widespread international condemnation and concerns over arbitrary detention, his domestic approval rating soared to nearly 90%, showing that his iron fist approach to gangs and gang violence was backed by the citizens of El Salvador [@gellmanDemocracyCrisisSalvador2022; @melendez-sanchezBukeleModelWill2024].
+
+While this marks an escalation in Bukele's centralization of power this was merely the dramatic display of the erosion. Research from scholars and international observers suggests that it began much earlier, when his administration worked to systematically undermine opposition parties and lower the efficacy of courts, independent agencies, local governments, civil society organization, and the press. Scholars argue the country’s authoritarian shift can be marked by the rapid acceleration in the centralization of power, occurring after his party, Nuevas Ideas, secured a legislative supermajority in 2021 [@melendez-sanchezLessonsSalvadorsAuthoritarian2022]. Following the 2021 legislative elections, the Assembly swiftly removed all five magistrates of the Constitutional Chamber of the Supreme Court and the Attorney General, replacing them with loyalists [@u.s.departmentofstateHumanRightsReports2021; @gellmanDemocracyCrisisSalvador2022]. Later that year, the reconstituted court authorized presidential reelection despite explicit constitutional prohibitions, paving the way for Bukele’s successful 2024 bid which resulted in his re-introduction to a government that had been radically reshaped [@bbcSalvadorsPresidentBukele2024].
+
+Long before Bukele entered office, Salvadorans had grown deeply disillusioned with representative democracy. In 2018, the year before his election, 63.4 percent reported dissatisfaction with democracy [@lapoplabAmericasBarometerSalvador2018]. More than 60 percent agreed that elections were “a waste of time,” and nearly 80 percent said major parties did not represent people like them [@iudopEncuestaSobreProceso2018; @melendez-sanchezLessonsSalvadorsAuthoritarian2022]. Support for traditional parties had collapsed: just 30.8 percent identified with two of the prominent political parties by 2018. Public distrust extended further, as 84.9 percent of Salvadorans believed that at least half of all politicians were corrupt [@lapoplabAmericasBarometerSalvador2018]. In addition to perceptions of widespread corruption, Salvadorans faced large levels of insecurity and exposure to violence. Between 2004 and 2018, crime and violence consistently emerged as the country’s most severe problem, rising from 32 to 62 percent in national opinion surveys. Even during periods of declining homicide rates, such as the 2012–2014 truce, between 15 and 20 percent of Salvadorans reported living in neighborhoods controlled by gangs [@lapoplabAmericasBarometerSalvador2018; @castroSavingDemocracyReducing2022].
+
+Previous governments failed to contain violence and corruption, producing a widening gap between Salvadorans and the country’s democratic institutions. Bukele filled that void through appealing to widespread frustration and insecurity [@vanderborghGovernmentResponsesGang2019; @humanrightswatchSalvadorEvents20232023]. He won 53 percent of the vote, leading by 21 points from his nearest competition [@marquezRecentBooksNeoliberalism2021]. His enduring popularity had gone beyond the campaign trail, stemming not merely from rhetoric but from his ability to deliver on it. Although the March 2022 security crackdown generated significant human-rights concerns, it achieved what previous administrations were unable to. By early 2023 the gangs that had long dominated territory, extorted residents, and driven El Salvador’s status as one of the world’s most violent countries had been largely dismantled. Official homicide and extortion rates fell to historic lows. While Bukele is not the first Latin American president to adopt iron fist policies, he is the first to do so with outcomes that, from the public’s perspective, appeared to decisively resolve the very insecurities that had eroded trust in the democratic system [@melendez-sanchezLessonsSalvadorsAuthoritarian2022].
+
+Bukele has rooted his political project in the claim that he, not existing institutions, embodies the true will of the Salvadoran people. He capitalized on widespread anger toward corruption with slogans such as “Return what you have stolen” and “There is enough money when no one steals". In speeches, he routinely frames his administration as a historic effort to restore “real democracy” after two centuries of elite manipulation and institutional decay. “Now we are building a real democracy,” he proclaimed. “For 200 years, democracy was a pantomime… They never cared about people, they only cared about votes” [@melendez-sanchezLessonsSalvadorsAuthoritarian2022]. Following his removal of term limits and subsequent re-election, Bukele went further, asserting that democratic legitimacy derived exclusively from his overwhelming popular mandate noting,
+
+> “This is the first time that a single party exists in a country in a fully democratic system. The entire opposition was pulverized… Democracy means the power of the people, demos and kratos. We Salvadorans are united,”
+
+\noindent labeling his consolidation of power and removal of both of the longstanding major parties from participation as democratic [@melendez-sanchezLessonsSalvadorsAuthoritarian2022; @wolfSalvadorNayibBukele2024]. Largely, public opinion trends suggest that many Salvadorans have come to accept this reframing. Between 2018 and 2021, satisfaction with democracy rose sharply, and distrust in elections declined. In effect, Salvadorans have reported growing confidence in what they perceive to be a democratic system at the very moment that core democratic norms and institutions are being weakened[@lapoplabAmericasBarometerSalvador2018; @melendez-sanchezUltraderechaSalvadorPeculiar2023].
+
+As perceptions of democracy concentrate around the executive, and his approach to creating "the safest country in North America," understanding the mechanisms sustaining such high support is critical [@velezSalvadorNamedOne2024]. This raises a fundamental question for the study of democratic backsliding in contexts of high violence:
+
+> **How does exposure to different forms of violence influence support for President Bukele in El Salvador, and does economic performance moderate this relationship?**
+
+\noindent This study examines whether a dynamic of performance legitimacy and selective accountability sustains Bukele's popularity during this period of democratic erosion. By analyzing individual-level data from the 2021 AmericasBarometer (LAPOP), I explore the association between exposure to violence, both criminal and state-led, and support for the incumbent, testing whether citizens distinguish between security failures and institutional abuses when evaluating the regime. I further examine whether economic perceptions act as a compensatory mechanism, potentially overriding the political costs of security failures.
+
+To answer this question, I utilize a comparative Logistic Regression design on a national probability sample of Salvadoran adults ($N=1,435$). I operationalize victimization in two distinct ways, Gang Extortion (representing policy failure) and State Bribery (representing institutional abuse), to test whether voters attribute blame differently based on the perpetrator. To isolate these mechanisms, I control for structural confounders including urbanization and education (serving as a proxy for socioeconomic status) and test for the moderating role of retrospective economic perception.
+
+I find that victims of crime do not blindly demand authoritarianism or call for iron fist policies. Instead, my results reveal a process of selective accountability. Victims of gang extortion are significantly less likely to support President Bukele ($\beta = -0.465$), treating continued insecurity as a specific policy failure. However, voters do not penalize the administration for state-led corruption, suggesting Bukele is largely insulated from the reputational costs of institutional abuse. While economic perceptions do not formally moderate the victimization-support relationship, they operate as a powerful independent predictor of support, suggesting that perceived economic delivery and security accountability function as parallel rather than interactive mechanisms sustaining incumbent support during democratic erosion.
+
+## Literature Review
+
+### Democratic Backsliding and the New Authoritarianism
+
+The study of democratic decline has undergone a significant as illiberal democracies have replaced the traditional autocratic shifts. Where earlier scholarship focused on abrupt regime changes, contemporary research emphasizes a slower process in which elected incumbents incrementally dismantle democratic institutions from within [@bermeoDemocraticBacksliding2016]. @bermeoDemocraticBacksliding2016 identifies this pattern as "executive aggrandizement," a mode of backsliding in which leaders weaken checks on executive power through legal and institutional channels rather than overt force. @levitskyHowDemocracies2018 describes a similar dynamic, arguing that modern democracies are most vulnerable not to external threats but to elected leaders who subvert the very institutions that brought them to power.
+
+@luhrmannThirdWaveAutocratization2019 situate these dynamics within a broader historical pattern, identifying the current period as a "third wave of autocratization" that encompasses democratic recession, institutional breakdown, and authoritarian consolidation across regime types and ideological orientations. Unlike earlier waves, which were concentrated in specific regions or driven by Cold War dynamics, the current wave is global in scope and proceeds through nominally democratic channels making it difficult to identify a discrete moment at which democracy "ends." This ambiguity is compounded by the fact that many of these leaders maintain, and in some cases expand, genuine popular support throughout the process of erosion, raising the question of whether backsliding is better understood as something done to citizens or something done with them. Throughout the paper, they focus on the process of "autocratization," which focuses on the erosion of democratic norms regardless of the political system, attempting to focus on the process rather than the end result.
+
+### Performance Legitimacy and the Demand for Democratic Erosion
+
+The concept of legitimacy has long been central to understanding regime stability, even before the period of "illiberal democracies". @lipsetSocialRequisitesDemocracy1994 defined it as the "moral title to rule," arguing that citizens should only obey the political institutions which are appropriate and worthy of obedience. This is extended by @diamond2024 who argues that sustained effective performance in delivering economic growth, reducing poverty, controlling corruption, and maintaining order fills a "reservoir of legitimacy" that insulates regimes from short-term crises. This reservoir, however, does not end with democracies. @leviTrustworthyGovernmentObligations2022 frames the underlying mechanism through the social contract of Hobbes and Locke, arguing citizens accept to being governed, and in return the sovereign wields power to their benefit. When governments uphold their end of this implicit bargain, they earn compliance and trust. When they fail to do so, the contract falls apart.
+
+The distinction between procedural and performance legitimacy is central to this discussion. Procedural legitimacy holds that democratic governance derives its authority from the fairness of its processes and the appearance of democratic rule regardless of outcomes [@tyler2006]. Performance legitimacy, on the other hand, holds that regime support is a function of what the state delivers. While the two are far from mutually exclusive, the relative weight citizens assign to each has significant implications for democratic stability. If procedural legitimacy is sufficient on its own, democratic erosion should provoke backlash even when the incumbent delivers material benefits. If performance legitimacy dominates, citizens may tolerate or support institutional erosion so long as they perceive the state as delivering.
+
+Recent empirical work suggests that performance matters far more than procedural theories may assume. @acemogluSuccessfulDemocraciesBreed2025 find that support for democracy is strongly predicted by citizens' experience of successful episodes of democratic governance, rather than by overall lifetime exposure to democracy. This study implies that democratic legitimacy is not self-sustaining and must be continually renewed through outcomes citizens can observe and evaluate. Similarly, @fukuyamaDeliveringDemocracyWhy2025 argue that democratic underperformance is a primary driver of backsliding. Pulling from survey data from roughly 650,000 respondents across multiple barometer projects, they find a strong positive correlation between aggregate economic performance and citizen satisfaction with democracy. They find that this relationship that holds across regimes which have experienced different levels of democratic backsliding, with both stable democracies and regimes that have experienced dramatic institutional shifts since 1990. Their argument is that when democracies fail to deliver on visible, tangible public goods, citizens lose faith in the democratic project and become receptive to authoritarian alternatives who promise results. @fukuyamaDeliveringDemocracyWhy2025 further argue that democracies face structural disadvantages in delivery relative to autocracies, with veto players, proceduralism, electoral time horizons, media scrutiny, and citizen skepticism of government all slowing the pace of policy output, creating a perceived performance gap that autocracies exploit.
+
+@carothersMisunderstandingDemocraticBacksliding2024 challenge this thesis directly, arguing that economic performance and tangible public goods are only a piece of performance legitimacy and far from the primary causal mechanism. Examining twelve prominent cases of recent backsliding, they find that the relationship between economic underperformance and democratic erosion is inconsistent at best. In eight of twelve cases, inequality was trending downward in the five years preceding the election of the leader who subsequently drove backsliding. Poverty declined in nine of twelve. Growth was stable or high in most, with several widely regarded as developmental successes prior to their episodes of erosion. Carothers and Hartnett argue that the outcomes of these pivotal elections were determined by a dense mix of social, cultural, and political factors, concluding that backsliding is better understood as a failure of democratic constraint rather than democratic delivery. The onus belongs on leaders who exploit weak institutional guardrails, not on citizens who allegedly demanded authoritarianism.
+
+In their response, @thomascarothersPerformanceWhyLeaders2025 sharpen this critique by noting Fukuyama et al.'s cross-national correlations between economic performance and democratic satisfaction, fail to establish a causal link to backsliding specifically. Several of the countries with the lowest democratic satisfaction in Fukuyama's data have not experienced backsliding, while the United States, which had the strongest economic growth among its close peers from 2020 to 2024, is the only one experiencing serious democratic trembling. Carothers and Hartnett further note that many leaders who drove backsliding were not anti-institutional outsiders capitalizing on economic discontent but experienced political figures, such as Orbán, Erdoğan, Hasina, and Netanyahu, who promised to reform democracy, through their lens, not dismantle it. The erosion that followed was, in their framing, "illiberalism by surprise" rather than a conscious popular mandate for authoritarianism [@bartels2023].
+
+The debate remains unresolved, but both sides share a notable limitation, depending on the same upstream assumption on what cases demand-sided backsliding. Fukuyama et al. operationalize performance almost entirely through economic indicators: GDP growth, poverty, inequality, infrastructure. Carothers and Hartnett expand the lens somewhat, acknowledging that corruption and crime played roles in specific cases, but treat these as additions to a fundamentally economic framework rather than as distinct political arenas with their own accountability logics. Neither side examines whether citizens evaluate state performance differently across domains, nor do they test their macro-level claims with individual-level data on how specific experiences of state performance shape political attitudes during backsliding.
+
+This gap is significant because it assumes that "delivery" is a monolithic concept that citizens evaluate through a single calculus. Yet there are strong theoretical reasons to expect otherwise. A citizen who experiences improved economic conditions may evaluate the state's economic performance positively while simultaneously experiencing state predation and evaluating institutional integrity negatively. Whether these evaluations aggregate into net support or net opposition for the incumbent, and whether some domains of performance are weighted more heavily than others, is an empirical question that the current debate cannot answer at the level it is being conducted. Answering it requires moving from cross-national correlations to individual-level analysis within cases of active backsliding, examining not just whether citizens are satisfied with democracy in the aggregate, but which specific experiences of state performance predict their support for the incumbent eroding it
+
+This is where the micro-foundations literature on authoritarian Institutional Revolutionary Party support becomes relevant. Scholars have examined individual-level determinants of regime support in consolidated autocracies, with @magaloniVotingAutocracyHegemonic2006 on patronage networks under Mexico's Institutional Revolutionary Party (PRI), @gurievInformationalAutocrats2019 on how modern autocrats sustain support through information manipulation rather than repression, @fryePutinsPopularityReal2017 on economic voting under Putin. This work demonstrates that citizens in authoritarian contexts are not passive subjects but active evaluators of regime performance, capable of sophisticated attribution and differentiated judgment. However, this literature has focused predominantly on consolidated authoritarian regimes rather than on regimes in the process of backsliding, where institutional ambiguity is greatest and citizens are navigating a hybrid space between democratic expectations and authoritarian realities.
+
+### Security, Violence, and the Demand for Authoritarian Order
+
+While the performance legitimacy debate has centered on economic delivery, Mano Dura scholarship has examined how exposure to violence and insecurity shapes citizen demand for authoritarian governance. This literature, which focuses on Latin American experience and policy but with broader comparative application, documents a consistent pattern, where under conditions of chronic insecurity, citizens become more willing to support extralegal state violence, tolerate restrictions on civil liberties, and endorse strongman leaders who promise to restore order through force.
+
+@batesonCrimeVictimizationPolitical2012 demonstrates that crime victimization significantly increases individual support for vigilante justice and extralegal violence. This finding holds across regime types and levels of development, suggesting that the experience of victimization activates a demand for order that operates independently of ideological orientation or prior democratic commitments. The mechanism is not primarily ideological but experiential, where direct exposure to insecurity reshapes a citizen's evaluation of what the state owes them and what tradeoffs they are willing to accept. @malone2010 extends this finding, showing that crime victimization erodes trust in democratic institutions across Latin America, discussing not just trust in specific incumbents or parties, but in the institutional framework of democracy itself. Citizens who experience crime come to view democratic procedures as inadequate for addressing their most immediate material concern of personal safety.
+
+In Central America specifically, @perez2015 documents how sustained insecurity drives public support for mano dura security policies characterized by militarized policing, mass incarceration, and the suspension of due process protections. This support is not confined to ideological conservatives or authoritarian personalities, emerging across the political spectrum in contexts where citizens perceive the state as having lost its monopoly on violence. The logic is transactional, with citizens who feel unprotected by existing institutions becoming receptive to leaders who promise to restore security through extraordinary means, even when those means entail significant costs to democratic governance. @castroSavingDemocracyReducing2022 demonstrate that this dynamic extends beyond attitudes to electoral behavior, showing that gang territorial control in El Salvador significantly shapes patterns of electoral participation.
+
+Interestingly Mano Dura literature rarely interacts with democratic backsliding scholarship, and vice versa. The backsliding literature treats security as an occasional contextual factor, with Carothers and Hartnett labeling crime as relevant in El Salvador and the Philippines but do not theorize it as a distinct part of performance legitimacy with its own attribution logic. The security-demand literature, documents how insecurity generates authoritarian preferences but does not connect this dynamic to the broader process of institutional erosion that backsliding scholarship describes. The result is two bodies of work that describe overlapping phenomena of citizens supporting leaders who concentrate power and weaken democratic constraints, while engaging with separate literature.
+
+If citizens evaluate security through different accountability logic than economic delivery, attributing security failures directly to the incumbent as a policy failure, while treating economic conditions as more structural and diffuse, then the performance legitimacy framework needs to be examined in seperation.
+
+A citizen's willingness to tolerate democratic erosion may depend not on a global assessment of state performance but on which specific realm of delivery is most salient to their lived experience, and whether the incumbent is perceived as succeeding or failing within that context. The existing literature, generally operating at the macro level with aggregate economic indicators on one side and aggregate crime statistics on the other, cannot test the question of how voters directly respond to delivery. Doing so requires individual-level data that links specific experiences of victimization, differentiated by source and type, to political attitudes within a case of active democratic backsliding.
+
+### Salvadoran Civil War, Peace Accords, and Long Term Institutional Effects
+
+While many foreign observers initially regarded the Salvadoran Peace Accords of 1992 as Latin America’s most successful democratic transitions, scholars have since identified the pact as a source of institutional instability and public disillusionment with democracy[@buizaSafeguardingSalvadorsTransition2018; @melendez-sanchezLatinAmericaErupts2021]. These negotiations preceded a brutal civil war between the insurgent Farabundo Martí National Liberation Front (FMLN) and the Salvadoran government, administered in its final years by the right-wing Nationalist Republican Alliance (ARENA). Throughout the twelve-year period, the conflict claimed the lives of 75,000 civilian and thousands of combatants alongside displacing forcefully displaced nearly one million people [@chavezHowDidCivil2015].
+
+The civil war itself was rooted in decades of extreme socioeconomic inequality, elite domination, and systematic state repression under what critics label authoritarian military-oligarchic regime [@chavezHowDidCivil2015]. In this context, the FMLN, a coalition of leftist guerrilla organizations, emerged with the objective of overthrowing the authoritarian state and fundamentally redistribute political and economic power. The founding of the FMLN in 1980 represented a pivotal convergence of the “Old Left” and the “New Left,” creating a group with substantial organizational capacity, military and political expertise, and international networks. While this ideological and strategic diversity was the groups initial strength, throughout the conflict leaders struggled to maintain unified positions on revolutionary strategy, negotiation, and long-term political goals. At the same time, the ideological decline of socialist parties in Latin America and Europe pushed the FMLN toward a more pragmatic orientation and away from its original rigid Marxist-Leninist principles [@chavezHowDidCivil2015; @melendez-sanchezLatinAmericaErupts2021].
+
+This concessions largely influenced the peace negotiations in 1992, where the organization set aside its earlier insistence on structural socioeconomic transformation. Instead, FMLN leadership articulated two core negotiating aims: the comprehensive demilitarization of the Salvadoran state and the creation of institutional guarantees for a competitive democratic order. The UN-mediated negotiation between the government of President Alfredo Cristiani and the FMLN ended the conflict in 1992, paving the way for the only sustained democratic period in Salvadoran history [@chavezHowDidCivil2015].
+
+In their paper, @melendez-sanchezLessonsSalvadorsAuthoritarian2022 highlights three central components of the transition pact that initially enabled the emergence of a strong and stable party system following the peace accords. The first was the peace accords themselves, which transformed the FMLN from a mobilized guerrilla force into a political party able to participate freely in the political sphere. Second, the 1993 General Amnesty Law granted combatants on both sides immunity from prosecution for war-related crimes, allowing the leadership to remain in power after the war. Finally, a new Electoral Code, written in 1992, established high barriers to entry for new parties and gave leaders of both ARENA and the FMLN significant influence over future electoral processes.
+
+Scholarship argues that these “pacted transitions,” aimed at safeguarding the interests of powerful elites, are key to stabilizing new democracies and creating “a sufficiently strong consensus about the rules of the game” so that no major elite actor is incentivized to revert to authoritarianism [@karlDilemmasDemocratizationLatin1990; @melendez-sanchezLessonsSalvadorsAuthoritarian2022]. This approach to building state capacity rests on the idea that conflict is rooted in weak institutional frameworks, leading external actors to focus their efforts on strengthening institutional capacity through state-building and democracy-support measures [@foxPoliticalOrderDevelopment2012; @zulueta-fulscherOvercomingOwnershipDilemma2018]. The three components of El Salvador’s transition followed this logic, successfully persuaded the parties to lay down their arms, created conditions “minimally safe for powerful actors on both sides of the regime divide,” and enabled two historical rivals to form a democratic system [@melendez-sanchezLessonsSalvadorsAuthoritarian2022].
+
+Nonetheless, scholarship suggests that when capacity-building becomes the primary focus of development plans, elites often sideline efforts to make institutional frameworks more inclusive or democratic. Increasing representation, participation, openness, and accountability would require structural reforms that depend on elites relinquishing at least part of their power to either the public or emerging political actors [@zulueta-fulscherOvercomingOwnershipDilemma2018]. More broadly,
+
+> *“*there is no necessity for a society to develop or adopt the institutions that are best for economic growth or the welfare of its citizens, because other institutions may be even better for those who control politics and political institutions*”* [@acemogluWhyNationsFail2013].
+
+\noindent with elites being likely to resist reforms that reduce their institutional control [@zulueta-fulscherOvercomingOwnershipDilemma2018].
+
+Over time, the high barriers to entry and protections for existing leadership built into the 1992 peace accords encouraged a form of democratic consolidation in which a small group of elites on both sides of the regime divide could reliably safeguard their interests through ARENA and the FMLN. A key factor was the Amnesty Law, which allowed wartime elites to remain in control of both parties and prevented perpetrators of war crimes and corruption from being held accountable. Additionally, the Electoral Code gave party leaders full control over internal nomination and discipline, enabling these elites to remain in power for decades while removing any emerging opposition [@melendez-sanchezLessonsSalvadorsAuthoritarian2022]. This control extended across the broader political system. @gutierrezsalazarLuchaPorDemocracias2015 notes that postwar reforms did little to limit partisan influence over the judiciary, pointing to limited autonomy and extensive clientelist networks as key impediments to the maintenance of democratic norms.
+
+These arrangements also preserved and deepened longstanding socioeconomic and political inequalities, allowing various forms of elite domination to persist and evolve in the following decades. As a result, inequality, economic exclusion, and social disparities remained entrenched, driving increases in external economic institutions through migration and and a large dependence on remittances.
+
+### Visible Corruption, Democratic Consolidation, and Narrow Consensus
+
+Democratic consolidation also produced a narrow procedural consensus, marked by limited ideological diversity between parties. In their papers, @colalongoPromesasIncumplidasPaz2024 and @melendez-sanchezUltraderechaSalvadorPeculiar2023 point to the 2009 election as a key example of this dynamic. After twenty years of ARENA governments, the FMLN won the presidency for the first time since the democratic transition and formed a left-wing administration under Mauricio Funes, a political outsider to the party. Funes’s election was widely interpreted as a compromise, signaling that the FMLN had sacrificed ideological purity to win the presidency for the first time. In hopes of curtailing this and retaining internal power, party leadership had initially vetoed Funes' nomination, later permitting him to run only on the condition that his running mate be a former FMLN civil war commander.
+
+Despite his reformist platform, Funes largely replicated the political model of his ARENA predecessors, and party brands began to dilute. The FMLN, whose identity had long been built around opposing ARENA’s economic and security policies, ultimately favored policy continuity over reform. Contrary to campaign promises, the party did not attempt to de-dollarize the economy, nationalize key industries, or intensify redistribution; instead, Funes instituted a government austerity plan in his first month in office [@melendez-sanchezUltraderechaSalvadorPeculiar2023]. Economically, ongoing market liberalization continued to erode state institutions, sustaining structural poverty and contributing to social violence [@colalongoPromesasIncumplidasPaz2024].
+
+This dilution extended to security policy. After experimenting with alternative approaches, Funes ultimately embraced the hardline gang crackdowns of previous ARENA governments. Funes’s decision to militarize public security in response to renewed gang offensives further entrenched this overlap, paving the way for deeper institutional violence [@roqueNayibBukelePopulismo2021; @colalongoPromesasIncumplidasPaz2024]. This was only intensified after Funes was succeeded by Sánchez Cerén, who, like his predecessor, continued to favor free-market policies and repressive security approaches [@melendez-sanchezUltraderechaSalvadorPeculiar2023].
+
+In this environment, civic–military alliances persisted to preserve the status quo: elites protected their interests, constrained reforms, and prevented substantive debate over the country’s economic model. @chavezHowDidCivil2015 notes that the FMLN’s turn toward pragmatism, making concessions to consolidate itself as a legal political party and anchoring itself firmly within ARENA’s neo-liberal framework rather than its original radical project. While scholarship argues this began before the end of the Civil War, the presidency of Mauricio Funes marked an institutional shift away from the FMLN’s socio-economic reform agenda, solidifying its role as a center-left party that had conceded the economic status quo.
+
+Alongside brand dilution, corruption investigations involving members of both ARENA and the FMLN reinforced voters’ perceptions that the two parties had become increasingly indistinguishable in their policy orientations and political behavior. A major catalyst for this disillusionment was a string of high-profile corruption cases beginning in 2013.
+
+In September of that year, former President Francisco Flores (1999–2004) was accused of redirecting \$15 million in international earthquake-relief donations to ARENA’s campaign coffers. What followed was unprecedented: within a five-year span, six of the country’s most powerful political figures were publicly and credibly implicated in corruption. While in theory, high-profile corruption prosecutions can strengthen democracy by demonstrating institutional accountability and deterring future abuses, they can also backfire by generating a broader perception that the entire political system is corrupt. Scholars describe this as a sense that “the whole system is rotten,” a dynamic which proved especially destabilizing, as it coincided with the collapse of meaningful programmatic differences between ARENA and the FMLN. The result was a voter base increasingly disillusioned with the existing democratic structure which seemed aligned in their ideological and material goals [@melendez-sanchezLessonsSalvadorsAuthoritarian2022] .
+
+These instances of corruption and alignment were not merely a matter of policy missteps but reflected a deeper structural feature of the postwar regime, one fundamentally centered on maintaining order rather than expanding representation or accountability. El Salvador’s democracy became, in effect, “hollowed out” by design, providing populist candidates little push back when attacking a democracy that failed to move beyond capacity-building.
+
+### Gangs, Mano Duro, and the Future for Bukele
+
+The roots of El Salvador’s two most dominant gangs lie in Los Angeles, California, where they were created by the children of asylum seekers and refugees displaced by the country’s civil war. Both Mara Salvatrucha (MS-13) and the 18th Street gang (M-18) emerged as youth responses to exclusion and discrimination, offering protection from rival Mexican-American and African American gangs. Following the end Salvadoran and Guatemalan civil wars, and the passage of the U.S. Illegal Immigration Reform and Immigrant Responsibility Act led to the mass deportation of residents with criminal records. These deportations effectively exported American gang structures to Central America, accelerating the spread of MS-13 and M-18 throughout the region [@fogelbachGangsViolenceVictims2011; @olatePredictorsViolenceDelinquency2012].
+
+Research on gang membership highlights the social and demographic conditions that shape participation. @olatePredictorsViolenceDelinquency2012 finds that most gang members are male, unemployed, live in urban areas, and have dropped out of school. Their activities tend to be localized and small-scale, involving drug use and minor trafficking, petty theft, muggings, extortion of local businesses and public transportation, territorial disputes, weapons violations, and violence against rival gang members. Although their presence was significant, gangs did not fully account for the country’s broader violence: evidence from the late 2000s suggested no involvement in large-scale transnational drug trafficking [@undocWorldDrugReport2010], and MS-13 and M-18 were responsible for less than a third of homicides and extortions [@olatePredictorsViolenceDelinquency2012].
+
+Scholars widely agree that the large-scale escalation of gang presence and violence in the 2010s was driven in part by a series of failed punitive approaches. These measures focused on mass arrests, joint police–military patrols, and broad criminalization of gang membership leading to a dramatic rise in the incarcerated population, especially among gang members [@olatePredictorsViolenceDelinquency2012]. Across the board the judiciary and prison systems lacked the resources and institutional capacity to process the surge in arrest, with overcrowded prisons becoming incubators for gang organization and recruitment. Additionally, the effect on crime was short-lived: temporary declines were followed by renewed and intensified violence. Repression pushed gangs to become more organized, more territorially coherent, and more violent [@olatePredictorsViolenceDelinquency2012]. As @wolfManoDuraPolitics2017 notes, governments across the political spectrum pursued *mano dura* largely for political and electoral gain, even as evidence accumulated that it was exacerbating the problem.
+
+Alongside punitive strategies, governments also engaged in informal or covert pacts with gangs, policies that often masked rather than resolved violence. The 2012 truce, one of the most notable examples, rested on secret negotiations that exchanged reduced homicide rates for improved prison conditions and other benefits. When the truce collapsed after roughly a year, violence surged dramatically: the homicide rate reached 106 per 100,000 inhabitants in 2015, the highest in the world at the time [@wolfSalvadorNayibBukele2024].
+
+Unlike previous administrations, many scholars view Bukele's iron fist policies, most notably the 2022 gang crackdowns, as largely successful. Between 2022 and 2023, the registered homicide rate fell from 8 to 2 per 100,000 inhabitants, the lowest level since the Peace Accords. Field research in ten former gang strongholds suggests that emergency rule has disrupted leadership structures and demobilized much of the rank-and-file. In many historically gang-dominated communities, residents report a sense of safety with large-scale support for iron fist approaches [@wolfSalvadorNayibBukele2024].
+
+Nonetheless, many scholars are skeptical. The lack of publicly available statistics makes it nearly impossible to verify who is being detained, on what grounds, and their level of gang affiliation. Police reports obtained by InSight Crime show that most detainees are not classified as gang members but as aspiring members or “collaborators,” who tend to be coerced participants . By September 2023, only 42 percent of more than 77,000 detainees were designated as gang members, while 54 percent were labeled collaborators and 4 percent wannabes [@insightcrimeSalvadorsPerpetualState2023; @wolfSalvadorNayibBukele2024]. Analysts note that dozens of gang cliques remain active and that extortion persists; and while these operate at far smaller scales they still present themselves as a viable option for youth. @wolfSalvadorNayibBukele2024 argues the emergency regime has targeted young and poor residents of gang-affected neighborhoods raising concerns that the crackdown may entrench the same conditions of poverty, stigma, and coercion that facilitate gang recruitment.
+
+As well, despite Bukele's public condemnation of his predecessor’s negotiations with gangs, many of his approaches mirror those of past iron fist policies. Investigations by the independent outlet *El Faro* revealed that his administration forged an undisclosed pact with gang leaders to secure electoral support and a reduction in violence [@martinezGobiernoBukeleNegocio2021]. Notably, negotiations have already sparked conflict, with the mass killings in late March 2022 were being a response to a breakdown between Bukele's administration and gang leadership.
+
+Additionally, Bukele faces the deeper challenge of maintaining the political legitimacy of the emergency regime itself. To sustain popular consent, an autocratic government must simultaneously claim progress and perpetuate the sense of threat that justifies extraordinary measures [@matovskiPopularDictatorshipsCrises2021; @wolfSalvadorNayibBukele2024]. Leaders which largely depend on addressing a single-issues to generate public support risk becoming obsolete both when they fail and when they succeed in resolving the crisis that legitimizes their rule. Bukele has attributed recent security improvements to the state of emergency, while also invoking the specter of lingering gang violence to justify its indefinite continuation. This strategy has proven successful, but it requires continually reinforcing the perception of threat and raises questions about how public opinion will respond to any breakdown in the current sense of safety [@wolfSalvadorNayibBukele2024].
+
+Bukele’s widespread popularity is tightly bound to the state of emergency and the perception that he has decisively confronted gang violence. Outside the realm of security policy, however, the country’s broader conditions mirror many of the failures of past administrations, and in some areas have deteriorated, raising questions around a future where gang policy becomes obsolete.
+
+During his first campaign, Bukele promised to build fifteen major infrastructure projects, including transportation facilities, public schools, and hospitals, at an estimated cost of \$1.5 billion [@labradorNuevaLeyCompras2023], many of which have been shelved or postponed [@wolfSalvadorNayibBukele2024]. In contrast, scholars have criticized Bukele's regime for corruption as well as prioritizing his own political and economic gain. The Terrorism Confinement Center (CECOT) facility, as an example, has become central to his internal and external popularity, suggesting a focus on funding that which is politically convenient. Additionally, the administration has used its few finished and many unfinished public works projects toward legitimizing practices of opaque government spending and contracts which critics claim benefit relatives and members of Nuevas Ideas. As well, ministers overseeing the environment, public works, and housing appear to have been selected less for technical expertise than for their loyalty to Bukele and their willingness to circumvent regulatory frameworks [@wolfSalvadorNayibBukele2024].
+
+Despite the limited public reaction so far, these development projects and land-use practices place pressure on long-standing points of political contention. Throughout the country’s history, land speculation and corruption have been major drivers of public discontent, making Bukele’s current governance strategy a risky gamble.
+
+What makes this approach particularly concerning for Bukele is the country’s socioeconomic conditions remain deeply strained. Almost half the population experiences food insecurity, and between 2019 and 2022, extreme poverty rose by two percentage points to 8.7 percent [@seelkeSalvadorBackgroundUS2024]. The economy remains heavily dependent on remittances, which account for 24 percent of GDP, and recorded growth of only 2.6 percent in 2023, making it the least dynamic in Central America [@gonzalezdiazInvestiduraBukeleSalvador2024].
+
+Public opinion reflects these pressures. Surveys indicate that Salvadorans are increasingly concerned about unemployment and the rising cost of living rather than security. In 2023, 70 percent of respondents identified economic issues as the nation’s primary problem [@iudopPoblacionSalvadorenaEvalua2024]. Currently, the economic stability and growth exists under a model which is unsustainable. While declining crime under the state of emergency has encouraged greater domestic and diaspora investment, foreign direct investment remains low [@seelkeSalvadorBackgroundUS2024]. Meanwhile, government debt has surpassed 90 percent of GDP, [@gonzalezdiazInvestiduraBukeleSalvador2024] putting El Salvador’s ability to meet its debt obligations as well as its political promises in the coming years into question.
+
+### Gaps in the Literature: Public Opinion and Democratic Perceptions
+
+The preceding sections have identified two disconnected bodies of scholarship. The democratic backsliding literature has produced a debate over the role of performance legitimacy in sustaining support for democratic erosion, but this debate operates at the macro level, cross-national correlations between economic indicators and aggregate satisfaction with democracy [@fukuyamaDeliveringDemocracyWhy2025; @carothersMisunderstandingDemocraticBacksliding2024]. It lacks individual-level empirical tests of how citizens actually process the performance tradeoffs both sides assume are occurring. Meanwhile, the security-demand literature has documented how victimization generates authoritarian preferences at the individual level, but has not connected this dynamic to the institutional process of backsliding or to the broader question of performance legitimacy. The result is that the central demand-side question such as under what conditions do citizens support incumbents who erode democratic institutions, continue to be examined at the macro level and tested empirically only within consolidated regimes, not within cases of active backsliding where the question is most relevant.
+
+Despite a growing body of research, important gaps remain in understanding how public opinion responds to state violence and how citizen tolerance for authoritarianism is shaped by their experiences and identities. Much of the existing literature focuses on policy effects or elite behavior, with comparatively little attention to how support for authoritarian regimes is constructed and sustained from below. For example, @castroSavingDemocracyReducing2022 examine how gang presence affects electoral participation, showing that criminal governance can significantly shape electoral outcomes, yet they do not extend this analysis to perceptions of democratic legitimacy.
+
+Additionally, in their report @melendez-sanchezUltraderechaSalvadorPeculiar2023 shows acts of democratic erosion in El Salvador have had little negative impact on public opinion. In fact, public satisfaction with democracy has increased since Bukele’s election, rising sharply between 2018 and 2021. Paradoxically, Salvadorans have grown more confident in a political system that is, by objective institutional standards, becoming less democratic. Nonetheless, the paper only examines political attitudes toward democracy itself, rather than public opinion and the electoral success of Bukele.
+
+Despite extensive discussion of democratic backsliding, relatively little research examines Bukele himself as the central object of public opinion. There is also limited empirical work on how state violence, notably mass arrests under the state of emergency, shapes voting behavior or long-term attitudes toward authoritarianism. Existing studies do not yet capture whether public support hinges solely on continued security “success,” or whether failures in maintaining safety might prompt voters to look beyond rhetoric. It remains unclear whether Bukele is insulated from or vulnerable to the same patterns of disillusionment that undermined ARENA and the FMLN.
+
+This research addresses these gaps by providing individual-level evidence from a paradigmatic case of elected autocracy, testing the micro-level mechanisms that the performance legitimacy debate theorizes but does not empirically examine. By disaggregating victimization by source and analyzing their distinct associations with incumbent support, this study bridges the backsliding literature's macro-level performance framework with the security-demand literature's individual-level focus on violence and political attitudes.
+
+In doing so, this paper demonstrates that Bukele's support is not unconditional, but rather contingent on specific performance metrics. While existing literature suggests that populist strongmen enjoy a 'blank check' from the electorate, my findings reveal a pattern of selective accountability: Bukele is largely insulated from punishment for state predation (bribery), yet remains vulnerable to failures in providing security from non-state actors (gangs). This challenges the simplistic view that citizens merely trade liberty for security. Instead, it suggests that citizens have narrowed the scope of accountability to the single domain that motivated the incumbent's rise, in this case Security, effectively granting the state latitude in other domains. The implication for the Fukuyama-Carothers debate is that "delivery" is not uniform, with citizens evaluating different domains of state performance through different accountability logics, and that context around security and economic performance may radically shape incumbent support during backsliding between states.
+
+## Causal Pathways & Theoretical Motivation
+
+To understand the determinants of incumbent support in the context of democratic backsliding, I propose a Data-Generating Process (DGP) where individual political preference ($Y$) is a function of exposure to violence ($X$), conditional on the voter's economic satisfaction ($Z$). The core theoretical claim is that the source of violence determines the political reaction, with exposure to non-state violence and exposure to state-led predation activating distinct causal mechanisms linking victimization to incumbent support. The following sections develop the theoretical logic underlying each pathway before formalizing them as testable hypotheses.
+
+### Non-State Violence and the Demand for Authoritarian Order
+
+The first causal pathway links exposure to criminal violence to increased demand for strongman governance. The mechanism operates through a sequence of psychological and political steps. First, direct victimization by non-state actors, focusing here on gang extortion, generates severe perceptions of personal insecurity. @batesonCrimeVictimizationPolitical2012 demonstrates that crime victimization across the Americas activates a visceral demand for order that operates independently of prior ideological commitments or democratic values. The experience of victimization is not processed as an abstract policy issue but as an immediate, existential threat to personal safety and livelihood.
+
+Second, this heightened insecurity reshapes the citizen's evaluation of the state. When non-state actors operate with apparent impunity, citizens interpret this as evidence that the state has failed in its most basic obligation: the provision of physical security. @malone2010 shows that this perception erodes trust not just in specific incumbents but in democratic institutions as a whole, which come to be seen as structurally incapable of addressing the threat. The procedural safeguards of democratic governance, such as due process, judicial oversight, protections against arbitrary detention, are reframed in the citizen's perspective not as rights to be protected but as obstacles to effective security provision.
+
+Third, this reframing creates an opening for leaders who promise to restore order through extraordinary means. The mano dura literature documents how citizens under conditions of chronic insecurity become receptive to militarized policing, expanded executive authority, and the suspension of civil liberties as necessary tradeoffs for safety [@perez2015; @wolfManoDuraPolitics2017]. Notably, this is not simply a preference for toughness but the presence of the belief that existing institutional order has failed and a willingness to endorse alternatives that bypass it. In El Salvador, where decades of gang dominance coincided with the perceived failures of both ARENA and FMLN governments to provide security, this dynamic is particularly pronounced. Bukele's appeal rests on the claim that he succeeded where democratic institutions failed, making continued support for him inseparable from the citizen's assessment of whether the security crisis has been resolved.
+
+That said, this mechanism puts the incumbent in a difficult position. If Bukele has already delivered security and the citizen perceives the gang threat as resolved, then continued extortion victimization represents not a general condition of insecurity but a specific failure of the incumbent's signature policy. Under these conditions, the iron fist logic may reverse: rather than driving demand for more authoritarianism, continued victimization may be interpreted as evidence that the strongman's approach is not working, potentially decreasing rather than increasing support.
+
+### State Predation and the Violation of the Social Contract
+
+The second causal pathway links exposure to state-led predation to decreased incumbent support through a social contract mechanism. The theoretical foundation here derives from the contractarian tradition, where citizens consent to be governed in exchange for the state's provision of security, order, and public goods [@leviTrustworthyGovernmentObligations2022]. When the state itself becomes a source of violence and insecurity, it violates the terms of this bargain turning the public against the incumbent.
+
+The mechanism operates differently from the non-state violence pathway in a critical respect, with the perpetrator being the state itself, acting through its agents. When a police officer or government official solicits a bribe, the citizen experiences the state not as a protector but as an extractor. This transforms the political evaluation. For most citizens, street-level state agents, such as police, municipal officials, bureaucratic gatekeepers, who are the most visible and tangible instruments of government; their behavior powerfully shapes whether the state is perceived as legitimate [@perezDemocraticLegitimacyPublic2003]. Standard retrospective accountability theory holds that citizens evaluate incumbents based on outcomes they can observe and attribute [@fiorina1981]. When the source of predation is a non-state actor, attribution is diffuse, the citizen may blame the incumbent for failing to prevent it, but the causal chain is indirect. When the source of predation is a state agent, attribution is direct and immediate with the citizen encountering the state as predator in a face-to-face interaction, and the incumbent being held responsible for the behavior of the apparatus he controls.
+
+@seligson2002 demonstrates this empirically across Latin America, finding that personal experience with corruption significantly reduces both trust in political institutions and support for the political system. The mechanism is not merely dissatisfaction with a specific transaction but a generalized reassessment of institutional legitimacy: if the state's agents are predatory, the citizen infers that the institutional framework is corrupt, and that the incumbent either tolerates or enables the corruption. In the context of a backsliding regime where the incumbent has concentrated power and weakened oversight institutions, this attribution may be particularly strong — the citizen has fewer alternative actors to blame when the state apparatus misbehaves.
+
+However, there is a competing theoretical possibility that complicates this prediction in the Salvadoran context specifically. If citizens perceive state predation as a necessary cost of the security gains they value most, they may rationalize it rather than punish the incumbent for it. @magaloniVotingAutocracyHegemonic2006 documents how citizens under authoritarian rule can develop sophisticated strategies for managing their relationship with a predatory state, tolerating certain forms of extraction in exchange for other benefits. If this logic holds in El Salvador, bribery victims may not penalize Bukele because they attribute the predation to low-level agents rather than the executive, or because the perceived benefits of security delivery outweigh the costs of institutional corruption.
+
+### Economic Performance as a Compensatory Mechanism
+
+The third causal pathway concerns the role of economic perceptions in moderating the relationship between victimization and incumbent support. The theoretical logic draws on the performance legitimacy framework developed in the preceding literature review. If regime support is sustained by the state's perceived ability to deliver tangible outcomes, then positive economic perceptions may function as a compensatory mechanism, offsetting the political costs of failures in other domains.
+
+The mechanism operates through a process of evaluative balancing. Citizens who perceive the economy as improving have a concrete, experiential basis for supporting the incumbent that is independent of their security experience. @fiorina1981 established the foundational logic of retrospective economic voting: citizens who perceive their economic situation as having improved reward the incumbent; those who perceive deterioration punish. In the context of democratic backsliding, this mechanism takes on additional significance. @diamond2024 argues that sustained effective performance fills a "reservoir of legitimacy" that insulates regimes from short-term crises. If economic satisfaction is able to generate such a reservoir, it may buffer the incumbent from the political costs of specific policy failures.
+
+The specific moderating hypothesis is that economic satisfaction dampens the negative effect of victimization on support. A gang extortion victim with positive economic perceptions faces competing signals: the security failure pushes against incumbent support, but the economic improvement pulls toward it. If the economic signal is strong enough, it may neutralize or override the security grievance, effectively buying the incumbent political capital to survive policy failures in other domains. This is the micro-level mechanism that the Fukuyama et al. performance legitimacy thesis implies but does not test: that citizens integrate across multiple performance domains, and that strength in one domain can compensate for weakness in another.
+
+However, there is an alternative possibility: that economic perceptions and security evaluations operate as parallel rather than interactive mechanisms. Under this alternative, citizens maintain separate mental accounts for different domains of state performance. A citizen may simultaneously approve of the economy and disapprove of security conditions without integrating these assessments into a single tradeoff calculus. If this is the case, economic perceptions would be a strong independent predictor of support but would not moderate the victimization-support relationship, the interaction term would be null even as both main effects are significant. Distinguishing between the interactive (moderation) and parallel (independent main effects) models is an empirical question the analysis addresses directly.
+
+### Theory: Data-Generating Process (DGP)
+
+To formalize the causal mechanisms developed above, I propose a Data-Generating Process (DGP) where individual political preference ($Y$) is a function of exposure to violence ($X$), conditional on the voter's economic satisfaction ($Z$).
+
+\noindent Exposure to Violence ($X$): Operationalized in two forms corresponding to the distinct causal pathways outlined above:
+
+-   Gang Extortion ($X_{Gang}$): Non-state violence ($H_1$).
+-   State Predation ($X_{State}$): Institutional abuse ($H_2$).
+
+\noindent Economic Perceptions ($Z$): Economic satisfaction as the theorized moderating variable ($H_3$).
+
+\noindent Support for Bukele ($Y$): Binary approval of Bukele's governance.
+
+\noindent Control Variables ($\mathbf{C}$): To block confounding paths and isolate the effect of violence on incumbent support, I condition on the following structural factors:
+
+-   Urbanization ($U$): Urban residents may have distinct exposure levels to extortion networks and possess different baseline political attitudes compared to rural residents.
+-   Income ($Inc$): Socioeconomic status influences both the probability of victimization (target suitability) and political preferences (operationalized via Education).
+-   Perceptions of Corruption ($C$): An individual's general view on political corruption is included to distinguish specific victimization events from generalized anti-system cynicism.
+
+These hypothesized relationships are visualized in the Directed Acyclic Graph (DAG) presented in Figure 1. The diagram illustrates the causal pathways linking Victimization ($V$) to Incumbent Support ($B$), while explicitly mapping the structural confounders, such as Urbanization ($U$) and Income ($Inc$), that simultaneously influence the likelihood of victimization and political attitudes. The dashed line connecting Economic Perception ($Ec$) to the main pathway represents the theorized moderating effect ($H_3$).
+
+\begin{center}
+\begin{tikzpicture}[
+    % Styles
+    var/.style={circle, draw=none, fill=none, inner sep=2pt, font=\large\bfseries},
+    direct/.style={->, >=Latex, thick},
+    interact/.style={->, >=Latex, thick, dashed}
+]
+
+    % --- MAIN AXIS (Centered on 0,0) ---
+    \node[var] (v0) at (-3, 0) {V};   % IV: Extortion/Violence
+    \node[var] (v1) at (3, 0) {B};     % DV: Bukele Support (Right)
+
+    % --- THE MODERATOR (Centered Top) ---
+    \node[var] (v7) at (0, 1) {Ec};    % Ec: Econ Perceptions
+
+    % --- LEFT SIDE (Background/Confounders) ---
+    \node[var] (v2) at (-3, 1.5) {U};    % Urban (Above Ex)
+    \node[var] (v4) at (-1.5, 2.5) {Inc}; % Income (Higher up, between U and Ec)
+    \node[var] (v3) at (-1.5, -1.5) {W};  % Welfare (Below path)
+
+    % --- RIGHT SIDE (Outcomes/Controls) ---
+    % REPLACED Id WITH C HERE (Top Right)
+    \node[var] (v5) at (3, 1.5) {C};     % Corruption Perception
+
+    % --- ARROWS ---
+    
+    % 1. The Main Path (Ex -> B)
+    \draw[direct] (v0) -- (v1) coordinate[midway] (midpoint);
+    
+    % 2. The Interaction (Ec -> Center)
+    \draw[interact] (v7) -- (midpoint);
+    
+    % 3. Moderator Direct Effect
+    \draw[direct] (v7) -- (v1);
+
+    % --- CONTROL PATHS ---
+    
+    % Urban (The Confounder)
+    \draw[direct] (v2) -- (v0);   % U -> Ex
+    \draw[direct] (v2) -- (v7);   % U -> Ec
+    \draw[direct] (v2) -- (v5);   % U -> C (Urban affects Corruption Perc)
+    \draw[direct] (v2) -- (v4);   % U -> Inc
+    
+    % Income
+    \draw[direct] (v4) -- (v7);   % Inc -> Ec
+    \draw[direct] (v4) -- (v5);   % Inc -> C (Income affects Corruption Perc)
+    
+    % Corruption (Formerly Ideology) -> Bukele
+    \draw[direct] (v5) -- (v1);
+    
+    % Welfare Path
+    \draw[direct] (v0) -- (v3);   % Ex -> W
+    \draw[direct] (v3) -- (v1);   % W -> B
+    
+\end{tikzpicture}
+\end{center}
+\begin{spacing}{1.25}
+\begin{tikzpicture}
+\node[align=left, font=\small, anchor=west] at (0,0) {
+\textbf{Legend} \\
+\textbf{V} = Exposure to Victimization (IV) \\
+\textbf{B} = Support for Bukele (DV) \\
+\textbf{Ec} = Economic Perceptions (Moderator) \\
+U = Urbanization \\
+Inc = Income \\
+C = Perceptions of Corruption \\
+W = Exposure to Welfare
+};
+\end{tikzpicture}
+\end{spacing}
+
+\noindent Building on the theoretical mechanisms developed above, I test the following hypotheses:
+
+> $H_0$: There is no statistically significant relationship between exposure to victimization and the probability of supporting President Bukele.
+
+#### The "Iron Fist" Hypothesis (Non-State Violence)
+
+\noindent As outlined above, the iron fist literature predicts that exposure to non-state violence activates a demand for authoritarian order. Under this logic, citizens who experience gang extortion should respond by supporting the strongman who promises to restore security through extraordinary means.
+
+> $H_1$: Individuals exposed to non-state violence (Gang Extortion) will be more likely to support President Bukele, reflecting a demand for authoritarian security.
+
+#### The "Broken Contract" Hypothesis (State Violence)
+
+\noindent The social contract mechanism predicts the opposite dynamic for state-led predation. When the state's own agents become extractive, the citizen experiences a direct violation of the implicit bargain that sustains regime support, and attribution to the incumbent is immediate.
+
+> $H_2$: Individuals exposed to state-led predation (Bribery) will be less likely to support President Bukele, reflecting dissatisfaction with institutional corruption.
+
+#### The "Performance Legitimacy" Hypothesis (Moderation)
+
+\noindent Finally, the performance legitimacy framework suggests that positive economic perceptions may function as a compensatory mechanism, dampening the political costs of victimization by providing an independent basis for incumbent support.
+
+> $H_3$: Positive economic perceptions will weaken the relationship between exposure to victimization and support for President Bukele.
+
+### Model Specification
+
+\noindent To test these relationships, I estimate the probability of incumbent support using a Logistic Regression model. The log-odds of support are modeled as:
+
+$$\ln \left( \frac{P(Y_i=1)}{1-P(Y_i=1)} \right) = \beta_0 + \beta_1 X_i + \beta_2 Z_i + \beta_3 (X_i \cdot Z_i) + \mathbf{\gamma C_i} + \epsilon_i$$
+
+\noindent Where:
+
+\begin{spacing}{1.25}
+$Y_i$: Binary indicator of Support for Bukele.
+ 
+$X_i$: Exposure to Violence (modeled separately as $X_{Gang}$ or $X_{State}$).
+ 
+$Z_i$: Retrospective Economic Perception.
+ 
+$X_i \cdot Z_i$: Interaction term testing the compensatory hypothesis ($H_3$).
+ 
+$\mathbf{C_i}$: Vector of controls (Urbanization, Education, Corruption Perception, Municipal Services).
+\end{spacing}
+
+## Data and Measurement
+
+### Unit of Analysis
+
+The unit of analysis for this study is the individual survey respondent, representing the voting-age population (18 years and older) of El Salvador.
+
+### Data Source and Coverage
+
+To examine the microfoundations of authoritarian support, I rely on data from the 2021 AmericasBarometer conducted by the Latin American Public Opinion Project (LAPOP). This survey utilizes a stratified, multi-stage cluster probability design to ensure national representatives across both urban and rural strata. The fieldwork was conducted via face-to-face interviews, capturing public sentiment during the consolidation of the Bukele administration but prior to the implementation of the 2022 State of Exception.
+
+### Sample Restrictions
+
+The 2021 AmericasBarometer employs a "split-sample" design (Core A and Core B) to accommodate a broader range of questions. This study utilizes the Core A module, which contains the primary variables regarding victimization and political attitudes. While the total survey sample includes roughly 3,000 respondents, the Core A subset consists of approximately 1,500 individuals. After performing list-wise deletion for missing values on key theoretical variables the final analytical sample consists of $N = 1,435$ observations.
+
+As well, the analysis excludes responses coded as "Don't Know" $(888888)$, "No Answer" $(988888)$, and "Inapplicable" $(999999)$. These codes represent non-substantive responses that do not map onto the theoretical continua of interest (e.g., the ordinal scale of economic perception or the binary status of victimization). For the "Inapplicable" category, missingness is structural, resulting from survey skip patterns (e.g., questions asked only to specific subsets of respondents). To ensure model validity, these observations are treated as missing data (NA) and removed from the final analytical sample.
+
+While the individual-level approach allows for a direct assessment of the mechanisms linking victimization to political support, the structure of the data limits the analysis to a single point in time. This is especially pertinent given the rapidly evolving political landscape in El Salvador under Bukele, and due to the potential for reverse causality between political attitudes and reported victimization.
+
+As well, the data fails to capture the attitudes of respondents before the 2019 election, where the question of Bukele support would be most relevant. Data from the 2023 LAPOP survey includes a question on vote choice in 2019, but the responses were heavily skewed toward Bukele, with over 70% of respondents reporting voting for him despite only winning around 52% of the vote. This suggests significant social desirability bias in the retrospective vote choice question, and puts into question the validity of using both this retroactive reporting as well as perception variables as a whole as the DV.
+
+Additionally, the split-sample design prevents the entire survey from being utilized, requiring the use of proxies back primarily by theories around the data generating process for certain demographic controls (e.g., Education for Income) that were located in the excluded survey module.
+
+### Key Variables and Coding
+
+This study focuses on the following key variables from the LAPOP 2021 Core A survey, operationalized as follows: \FloatBarrier
+
+```{r}
+#| results: asis
+
+var_table <- data.frame(
+  Role = c("Dependent Variable", 
+           "Independent Variable 1",
+           "Independent Variable 2", 
+           "Moderator",
+           "Control", "Control", "Control", "Control"),
+  Variable = c("Support for Bukele ($Y$)",
+               "Gang Extortion ($X_{Gang}$)",
+               "State Bribery ($X_{State}$)",
+               "Economic Perception ($Z$)",
+               "Education ($Inc_{proxy}$)",
+               "Urbanization ($U$)",
+               "Corruption Perception ($C$)",
+               "Municipal Services ($W_{proxy}$)"),
+  Source = c("M1 (Job Approval)",
+             "VICBAR4A",
+             "EXC6",
+             "IDIO2",
+             "EDR",
+             "UR1NEW",
+             "EXC7",
+             "SGL1"),
+  Coding = c("1 = Good/Very Good; 0 = Fair/Bad/Very Bad",
+             "1 = Extortion victim (12 mo.); 0 = Otherwise",
+             "1 = Bribe solicited (12 mo.); 0 = Otherwise",
+             "1 = Worse; 2 = Same; 3 = Better (reversed)",
+             "0 = None; 1 = Primary; 2 = Secondary; 3 = Higher",
+             "1 = Urban; 0 = Rural",
+             "1 = V. Uncommon $\\ldots$ 4 = V. Common (reversed)",
+             "1 = V. Bad $\\ldots$ 5 = V. Good (reversed)"),
+  Scale = c("Binary", "Binary", "Binary", 
+            "Ordinal (1--3)", "Ordinal (0--3)", "Binary",
+            "Ordinal (1--4)", "Ordinal (1--5)")
+)
+
+kbl(var_table, booktabs = TRUE,
+    caption = "Variable Operationalization",
+    col.names = c("Role", "Variable", "LAPOP Code", "Coding", "Scale"),
+    escape = FALSE,
+    align = c("l", "l", "l", "l", "c")) %>%
+  kable_styling(latex_options = c("hold_position"),
+                font_size = 10) %>%
+  column_spec(1, width = "2.1cm") %>%
+  column_spec(2, width = "3cm") %>%
+  column_spec(3, width = "1.7cm") %>%
+  column_spec(4, width = "4.7cm") %>%
+  column_spec(5, width = "1.3cm") %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+\FloatBarrier
+
+The decision to group neutral responses ("Fair") with non-support reflects two considerations specific to the Salvadoran context. Methodologically, given the ceiling effect of President Bukele's super-majoritarian approval ratings in 2021, treating neutral responses as support would artificially inflate the dependent variable, reducing variance and statistical leverage. Theoretically, literature on survey behavior in backsliding democracies suggests that "neutral" categories often serve as a "safe harbor" for critical respondents subject to social desirability bias or fear of reprisal [@brownbackSocialDesirabilityBias2017; @tannenbergAutocraticTrustBias2017]. Coding "Fair" as non-support therefore provides a conservative test of committed incumbent support, distinguishing explicit approval from ambivalent and potentially biased responses.
+
+Economic Perception serves as the theorized moderator ($Z$), proxying the receipt of effective state investment. Education is used as a proxy for socioeconomic status, as income data was located in the excluded Core B module. Municipal Services satisfaction proxies the tangible delivery of public goods. All ordinal variables are reverse-coded so that higher values correspond to more favorable perceptions.
+
+## Results
+
+### Visualizing the Distributions
+
+A key challenge in measuring the relationship between victimization and support is the non-random distribution of crime. Victims of extortion may differ systematically from non-victims along key socioeconomic characteristics. As shown in Appendix Figure A1, victimization is a low-probability event, with a small minority of respondents reporting exposure to either Gang Extortion or State Bribery. This imbalance poses a challenge for estimation, as the "treatment" group (victims) is much smaller than the "control" group (non-victims), potentially reducing statistical power.
+
+To preview the core hypothesis, I first visualize the unadjusted relationship between victimization and support for Bukele, comparing how support varies for victims of gangs versus victims of the state.
+
+```{r}
+#| echo: false
+#| out.width: "65%"
+#| fig.align: 'center'
+#| fig.cap: "Distribution of Support by Exposure to State and Gang Violence"
+
+# Plot A: Support by Gang Extortion
+plot_support_gang <- ggplot(LAPOP_Model, aes(x = as.factor(extortion_victim), fill = as.factor(bukele_support))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(values = c("gray", "darkgreen"), labels = c("Oppose", "Support")) +
+  labs(
+    title = "Support by Gang Extortion",
+    x = "Gang Victim",
+    y = "Proportion",
+    fill = "Support"
+  ) +
+  theme_classic(base_size = 11, base_family = "serif") +
+  theme(legend.position = "none") # Hide legend for first plot
+
+# Plot B: Support by State Bribery
+plot_support_bribe <- ggplot(LAPOP_Model, aes(x = as.factor(bribe_victim), fill = as.factor(bukele_support))) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(values = c("gray", "darkgreen"), labels = c("Oppose", "Support")) +
+  labs(
+    title = "Support by State Bribery",
+    x = "Bribe Victim",
+    y = NULL, # Remove Y label for cleaner side-by-side
+    fill = "Support"
+  ) +
+  theme_classic(base_size = 11, base_family = "serif")
+
+# Combine
+combined_support <- plot_support_gang + plot_support_bribe
+print(combined_support)
+```
+
+The comparison above offers a preliminary look at the core hypothesis without conditioning on controls. Support for Bukele drops noticeably among victims of Gang Extortion, consistent with the policy failure hypothesis, while the reduction appears less pronounced for victims of State Bribery. Additional covariate profile visualizations for both victim groups are presented in Appendix Figures A2 and A3.
+
+To quantify these differences, I perform balance tests comparing key covariates across both victim statuses.
+
+\vspace{1em}
+
+```{r}
+#| results: asis
+
+# --- Helper ---
+get_balance_row <- function(var, group_var, label, data = LAPOP_Model) {
+  tt <- t.test(data[[var]] ~ data[[group_var]])
+  est <- tt$estimate
+  diff_val <- round(est[2] - est[1], 2)
+  p <- tt$p.value
+  stars <- ifelse(p < 0.01, "***", ifelse(p < 0.05, "**", ifelse(p < 0.1, "*", "")))
+  c(round(est[1], 2), round(est[2], 2), diff_val, paste0(round(p, 3), stars))
+}
+
+vars   <- c("edr", "econ_perception", "corruption_perc", "is_urban")
+labels <- c("Education Level (0-3)", "Econ Perception (1-3)", 
+            "Corruption Perception (1-4)", "Urbanization (0-1)")
+
+# Build rows
+rows <- lapply(seq_along(vars), function(i) {
+  gang  <- get_balance_row(vars[i], "extortion_victim", labels[i])
+  bribe <- get_balance_row(vars[i], "bribe_victim", labels[i])
+  c(labels[i], gang, bribe)
+})
+
+balance_df <- as.data.frame(do.call(rbind, rows), stringsAsFactors = FALSE)
+colnames(balance_df) <- c("Variable", 
+                           "Non-Victim", "Victim", "Diff.", "p-value",
+                           "Non-Victim ", "Victim ", "Diff. ", "p-value ")
+
+kbl(balance_df, booktabs = TRUE, 
+    caption = "Balance Tests: Covariate Differences by Victimization Status",
+    align = c("l", rep("c", 8))) %>%
+  kable_styling(latex_options = c("hold_position", "scale_down")) %>%
+  add_header_above(c(" " = 1, "Gang Extortion" = 4, "State Bribery" = 4)) %>%
+  footnote(general = "*p<0.1; **p<0.05; ***p<0.01")
+```
+
+Table 1 presents the difference in means for key covariates between victims and non-victims across both forms of victimization. The two victim populations exhibit distinct demographic profiles, reinforcing the decision to model them separately.
+
+Among gang extortion victims, Urbanization shows the starkest contrast ($p < 0.01$). Victims are significantly more likely to reside in urban areas (56%) compared to non-victims (43%), consistent with the operational structure of MS-13 and Barrio 18, which concentrate territorial control and "rent extraction" in densely populated city centers [@olatePredictorsViolenceDelinquency2012]. This confirms urbanization as a necessary control; without it, the regression might mistake the political preferences of city dwellers for the effect of victimization. There is also a significant divergence in Economic Perception ($p < 0.01$): victims report lower economic satisfaction (1.63) than non-victims (1.80), suggesting a "double burden" in which extortion directly erodes disposable income or business viability. This correlation reinforces the importance of including economic perception as a moderator. Notably, Education and Corruption Perception do not differ significantly ($p > 0.10$), indicating that while gangs are geographically selective, they are relatively indiscriminate regarding social class or political cynicism within targeted zones.
+
+State Bribery victims present a completely different profile. Exposure is not significantly associated with Urbanization ($p = 0.167$) or Education ($p = 0.111$), suggesting state predation is more diffuse, affecting citizens across demographic lines rather than being confined to specific hotspots. The only significant difference is Corruption Perception ($p = 0.012$): bribery victims perceive substantially higher systemic corruption (3.54 vs. 3.29). This finding is critical for the selective accountability argument. If these victims do not punish the President in the voting booth, it is not due to ignorance of institutional decay, but rather a prioritization of other factors such as security outcomes or economic performance.
+
+## Results
+
+This section presents the results of the logistic regression analysis examining the determinants of support for President Bukele. First, I test the "Iron Fist" hypothesis ($H_1$) by modeling the effect of gang extortion on executive support. Second, I test the "State Predation" hypothesis ($H_2$) by examining the impact of bribery solicitation. Finally, I evaluate the moderating role of economic perception ($H_3$) across both models to determine if economic performance serves as a compensatory mechanism for victimization.
+
+### Model Estimation
+
+Table 3 presents the results of the logistic regression predicting support for Bukele based on exposure to Gang Extortion. Model 1 includes the main effects, while Model 2 introduces the interaction term.
+
+```{r}
+#| include: false
+
+#Run logistic regression for H1
+model_base <- glm(bukele_support ~ 
+                    extortion_victim +             # IV
+                    econ_perception +              # Moderator 
+                    is_urban + 
+                    edr + 
+                    corruption_perc + 
+                    muni_services,
+                  data = LAPOP_Model, 
+                  family = "binomial")
+
+# 2. Run the Interaction Model (Testing H1)
+# This adds the "Dampening" test
+model_interaction <- glm(bukele_support ~ 
+                           extortion_victim + 
+                           econ_perception +
+                           is_urban + 
+                           edr + 
+                           corruption_perc + 
+                           muni_services +
+                           extortion_victim * econ_perception ,
+                         data = LAPOP_Model, 
+                         family = "binomial")
+
+# 3. Create the Side-by-Side Table
+stargazer(model_base, model_interaction, 
+          type = "latex",
+          title = "Logistic Regression Results: Determinants of Bukele Support",
+          column.labels = c("Main Effects", "Interaction (H3)"),
+          
+          # Labels for your variables
+          covariate.labels = c("Extortion Victim", 
+                               "Econ Perception (Better)", 
+                               "Urban (Yes)", 
+                               "Education (0-3)", 
+                               "Corruption Perc (High)", 
+                               "Muni Services (Better)",
+                               "Interaction: Victim x Econ"),
+          
+          dep.var.labels = "Support for Bukele",
+          star.cutoffs = c(0.05, 0.01, 0.001))
+
+exp(cbind(OR = coef(model_base), confint(model_base)))
+exp(cbind(OR = coef(model_interaction), confint(model_interaction)))
+
+```
+
+\begin{table}[H] \centering
+  \caption{Logistic Regression Results: Determinants of Bukele Support}
+  \label{}
+  \small
+  % This sets the table width to the full text width and fills space between columns
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcc}
+\\[-1.8ex]\hline
+\hline \\[-1.8ex]
+ & \multicolumn{2}{c}{\textit{Dependent variable:}} \\
+\cline{2-3}
+\\[-1.8ex] & \multicolumn{2}{c}{Support for Bukele} \\
+ & Main Effects & Interaction (H3) \\
+\\[-1.8ex] & (1) & (2)\\
+\hline \\[-1.8ex]
+ Extortion Victim & $-$0.476$^{*}$ & $-$0.370 \\
+  & (0.208) & (0.535) \\
+ Econ Perception (Better) & 0.457$^{***}$ & 0.465$^{***}$ \\
+  & (0.103) & (0.110) \\
+ Urban (Yes) & $-$0.395$^{**}$ & $-$0.396$^{**}$ \\
+  & (0.148) & (0.148) \\
+ Education (0-3) & $-$0.439$^{***}$ & $-$0.438$^{***}$ \\
+  & (0.088) & (0.088) \\
+ Corruption Perc (High) & $-$0.138 & $-$0.138 \\
+  & (0.080) & (0.080) \\
+ Muni Services (Better) & 0.095 & 0.094 \\
+  & (0.060) & (0.061) \\
+ Interaction: Victim x Econ &  & $-$0.067 \\
+  &  & (0.311) \\
+ Constant & 1.963$^{***}$ & 1.952$^{***}$ \\
+  & (0.407) & (0.410) \\
+\hline \\[-1.8ex]
+Observations & 1,427 & 1,427 \\
+Log Likelihood & $-$664.355 & $-$664.332 \\
+Akaike Inf. Crit. & 1,342.709 & 1,344.664 \\
+\hline
+\hline \\[-1.8ex]
+\textit{Note:} & \multicolumn{2}{r}{$^{*}$p$<$0.05; $^{**}$p$<$0.01; $^{***}$p$<$0.001} \\
+\end{tabular*}
+\end{table}
+
+Model 1 rejects the "Iron Fist" hypothesis ($H_1$), with extortion victimization significantly decreases the odds of supporting President Bukele by approximately 38% ($\beta = -0.476, p < 0.05$). This suggests victims punish the incumbent for security failures rather than demanding increased authoritarianism. On the other hand, Economic Perception is the strongest driver of support ($\beta = 0.457, p < 0.001$), with a one-unit increase boosts support odds by roughly 58%. While Model 2 shows no significant interaction between victimization and economic perception regarding the "punishment effect" ($p > 0.1$), the magnitude of the main effects supports a compensatory relationship between public support and the executive The positive impact of economic satisfaction effectively offsets the negative impact of victimization, allowing the President to "buy back" support. Among controls, Urbanization ($\beta = -0.395$) and Education ($\beta = -0.439$) are negative predictors, while Corruption Perception is statistically insignificant.
+
+```{r}
+#| include: false
+
+# HA3
+model_bribe_base <- glm(bukele_support ~ 
+                          bribe_victim + 
+                          econ_perception + 
+                          is_urban + 
+                          edr + 
+                          corruption_perc + 
+                          muni_services,
+                          data = LAPOP_Model, family = "binomial",
+                        )
+
+model_bribe_interaction <- glm(bukele_support ~ 
+                                 bribe_victim * econ_perception + 
+                                 is_urban + 
+                                 edr + 
+                                 corruption_perc + 
+                                 muni_services,
+                               data = LAPOP_Model, family = "binomial")
+
+# 3. View Results
+stargazer(model_bribe_base, model_bribe_interaction, type = "latex",
+          title = "Logistic Regression Results: Determinants of Bukele Support (State Bribery)",
+          column.labels = c("Main Effects", "Interaction (H3)"),
+          covariate.labels = c("Bribe Victim (State)", "Econ Perception (Better)", 
+                               "Urban", "Education", "Gen. Corruption Perc", "Muni Services",
+                               "Interaction: Bribe x Econ"),
+          dep.var.labels = "Support for Bukele")
+
+exp(cbind(OR = coef(model_bribe_base), confint(model_bribe_base)))
+exp(cbind(OR = coef(model_bribe_interaction), confint(model_bribe_interaction)))
+```
+
+Table 4 tests the "State Predation" hypothesis ($H_2$), comparing the effect of state-level bribery against the findings for gang extortion.
+
+\begin{table}[H] \centering 
+  \caption{Logistic Regression Results: Determinants of Bukele Support (State Bribery)} 
+  \label{} 
+  \small
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{2}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-3} 
+\\[-1.8ex] & \multicolumn{2}{c}{Support for Bukele} \\ 
+ & Main Effects & Interaction (H3) \\ 
+\\[-1.8ex] & (1) & (2)\\ 
+\hline \\[-1.8ex] 
+ Bribe Victim (State) & 0.281 & $-$0.989 \\ 
+  & (0.336) & (0.878) \\ 
+ Econ Perception (Better) & 0.472$^{***}$ & 0.434$^{***}$ \\ 
+  & (0.103) & (0.105) \\ 
+ Urban & $-$0.418$^{***}$ & $-$0.420$^{***}$ \\ 
+  & (0.148) & (0.148) \\ 
+ Education & $-$0.443$^{***}$ & $-$0.441$^{***}$ \\ 
+  & (0.088) & (0.088) \\ 
+ Gen. Corruption Perc & $-$0.143$^{*}$ & $-$0.145$^{*}$ \\ 
+  & (0.080) & (0.080) \\ 
+ Muni Services & 0.104$^{*}$ & 0.100 \\ 
+  & (0.061) & (0.061) \\ 
+ Interaction: Bribe x Econ &  & 0.779 \\ 
+  &  & (0.529) \\ 
+ Constant & 1.881$^{***}$ & 1.958$^{***}$ \\ 
+  & (0.406) & (0.410) \\ 
+\hline \\[-1.8ex] 
+Observations & 1,427 & 1,427 \\ 
+Log Likelihood & $-$666.494 & $-$665.250 \\ 
+Akaike Inf. Crit. & 1,346.987 & 1,346.500 \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{2}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular*} 
+\end{table}
+
+In contrast to gang extortion, seen in Model 3, being a victim of bribery does not significantly affect the likelihood of supporting the President ($\beta = 0.281, p > 0.1$). This null result persists in the interaction model, where the interaction between bribery and economic perception fails to reach significance ($\beta = 0.779, p > 0.1$). Economic Perception remains the strongest predictor ($\beta = 0.472, p < 0.01$), indicating that a positive economic outlook increases the odds of support by approximately 60%. Demographic controls show clear divides, with urban residents being roughly 34% less likely to support the incumbent ($\beta = -0.418, p < 0.01$), and those with higher education are 36% less likely ($\beta = -0.443, p < 0.01$). Perceptions of corruption remain statistically insignificant at the 95% level ($\beta = -0.143, p > 0.05$).
+
+This null finding highlights the paradox around the accountability of the "Iron Fist." While voters impose a significant political cost for gang violence, punishing the incumbent for failing to uphold order, they appear indifferent to predatory behavior by state agents. This suggests that Bukele’s mandate is performative rather than institutional, with the electorate scrutinizing his ability to monopolize violence against gangs, yet offers him impunity for the repressive or corrupt excesses of the state apparatus itself. Ultimately, citizens seem willing to absorb the costs of state violence as long as the administration delivers on its core promise of eradicating non-state insecurity.
+
+```{r}
+#| out.width: "85%"
+#| fig.align: 'center'
+#| fig.cap: "Predicted Probability of Bukele Support by Economic Perception and Victimization Status"
+# Predicted probabilities from interaction models
+pred_gang <- as.data.frame(ggpredict(model_interaction, 
+                                      terms = c("econ_perception [1,2,3]", 
+                                                "extortion_victim [0,1]")))
+
+pred_bribe <- as.data.frame(ggpredict(model_bribe_interaction, 
+                                       terms = c("econ_perception [1,2,3]", 
+                                                 "bribe_victim [0,1]")))
+
+# Label victim status
+pred_gang$group <- factor(pred_gang$group, 
+                          levels = c("0", "1"), 
+                          labels = c("Non-Victim", "Victim"))
+
+pred_bribe$group <- factor(pred_bribe$group, 
+                           levels = c("0", "1"), 
+                           labels = c("Non-Victim", "Victim"))
+
+# Gang plot
+p_gang <- ggplot(pred_gang, aes(x = x, y = predicted, 
+                                 color = group, fill = group)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.15, color = NA) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  scale_x_continuous(breaks = c(1, 2, 3), labels = c("Worse", "Same", "Better")) +
+  scale_color_manual(values = c("Non-Victim" = "grey40", "Victim" = "#E74C3C")) +
+  scale_fill_manual(values = c("Non-Victim" = "grey40", "Victim" = "#E74C3C")) +
+  labs(title = "Gang Extortion Model",
+       x = "Economic Perception",
+       y = "P(Support for Bukele)",
+       color = "Status", fill = "Status") +
+  coord_cartesian(ylim = c(0.4, 1.0)) +
+  theme_classic(base_size = 12, base_family = "serif")
+
+# Bribe plot
+p_bribe <- ggplot(pred_bribe, aes(x = x, y = predicted, 
+                                    color = group, fill = group)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.15, color = NA) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  scale_x_continuous(breaks = c(1, 2, 3), labels = c("Worse", "Same", "Better")) +
+  scale_color_manual(values = c("Non-Victim" = "grey40", "Victim" = "#3498DB")) +
+  scale_fill_manual(values = c("Non-Victim" = "grey40", "Victim" = "#3498DB")) +
+  labs(title = "State Bribery Model",
+       x = "Economic Perception",
+       y = NULL,
+       color = "Status", fill = "Status") +
+  coord_cartesian(ylim = c(0.4, 1.0)) +
+  theme_classic(base_size = 12, base_family = "serif")
+
+# Combine
+(p_gang + p_bribe) + 
+  plot_layout(guides = "collect") & 
+  theme(legend.position = "bottom")
+```
+
+Figure 2 visualizes the predicted probabilities from the interaction models, illustrating the moderating hypothesis ($H_3$) directly. In the gang extortion model (left panel), the victim and non-victim lines run roughly parallel across all levels of economic perception: victims of extortion are consistently less likely to support Bukele regardless of whether they perceive the economy as worse, the same, or better. The absence of convergence between the two lines confirms the null interaction term ($\beta = -0.067, p > 0.1$). Economic optimism increases support for both groups at comparable rates, but does not close the gap opened by victimization. In substantive terms, improved economic perceptions do not "buy back" the support lost among extortion victims through a formal moderating mechanism — the punishment effect operates independently of economic satisfaction.
+
+The state bribery model (right) tells a different story in structure, though not in statistical significance. The lines cross, with bribery victims appearing less supportive at the lowest level of economic perception but more supportive at higher levels. This pattern is visually suggestive of the compensatory dynamic theorized in $H_3$. However, the wide confidence intervals around the victim group which is a direct result of the small bribery victim subsample ($n = 68$) prevent any meaningful inference. The interaction term fails to reach significance ($\beta = 0.779, p > 0.1$), and the crossing pattern is entirely consistent with sampling variability given the available data.
+
+Taken together, the predicted probability plots reinforce the core finding from the regression tables:, that economic perception and victimization act independently, opposing effects on incumbent support. While the additive structure of these effects produces a compensatory dynamic in practice, where positive economic evaluations offset the political cost of insecurity, this operates through separate main effects rather than a conditional relationship.
+
+### Diagnostics
+
+```{r}
+#| include: false
+library(arm)
+library(pROC)
+library(ResourceSelection)
+library(car)
+library(lmtest)
+```
+
+To assess the validity of the logistic regression results, I conduct a series of diagnostics addressing separation, influence, discriminatory power, model comparison, and multicollinearity. Given the significant class imbalance between victims and non-victims in both treatment variables, and that the rejection of $H_1$ rests on a single coefficient significant at $p < 0.05$, these checks are essential for evaluating the robustness of the core findings. Additional diagnostic visualizations, including Cook's Distance plots, influence bubble plots, binned residual plots, Hosmer-Lemeshow calibration tests, ROC curves, and predicted probability distributions, are presented in Appendix B.
+
+#### Separation Check
+
+With victimization being a low-probability event, quasi-complete separation is a concern. If any cross-tabulation cell is empty or near-empty, maximum likelihood estimates become unreliable and standard errors inflate.
+
+```{r}
+#| results: asis
+
+ct_gang  <- table(LAPOP_Model$extortion_victim, LAPOP_Model$bukele_support)
+ct_bribe <- table(LAPOP_Model$bribe_victim, LAPOP_Model$bukele_support)
+
+gang_rates  <- tapply(LAPOP_Model$bukele_support, LAPOP_Model$extortion_victim, mean, na.rm = TRUE)
+bribe_rates <- tapply(LAPOP_Model$bukele_support, LAPOP_Model$bribe_victim, mean, na.rm = TRUE)
+
+sep_table <- data.frame(
+  Model = c("Gang Extortion", "Gang Extortion", "State Bribery", "State Bribery"),
+  Victim_Status = c("Non-Victim (0)", "Victim (1)", "Non-Victim (0)", "Victim (1)"),
+  N_Oppose = c(ct_gang[1,1], ct_gang[2,1], ct_bribe[1,1], ct_bribe[2,1]),
+  N_Support = c(ct_gang[1,2], ct_gang[2,2], ct_bribe[1,2], ct_bribe[2,2]),
+  Support_Rate = round(c(gang_rates["0"], gang_rates["1"],
+                          bribe_rates["0"], bribe_rates["1"]), 3)
+)
+
+kbl(sep_table, booktabs = TRUE,
+    caption = "Cross-Tabulation: Victimization by Bukele Support",
+    col.names = c("Model", "Status", "Oppose", "Support", "Support Rate"),
+    align = c("l", "l", "c", "c", "c")) %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+No cells are empty, ruling out complete separation. The gang extortion cross-tabulation shows adequate cell sizes across all four combinations ($n = 239, 1052, 41, 95$), with a visible drop in the support rate among victims (69.9%) relative to non-victims (81.5%). The bribery cross-tabulation reveals a less favorable picture for estimation: the "bribe victim who opposes Bukele" cell contains only 12 observations. While this does not constitute quasi-complete separation, it limits the statistical power available to detect any negative effect of bribery on support and contributes to the large standard error on the bribery coefficient ($SE = 0.336$, compared to $0.208$ for extortion). The null finding for $H_2$ may therefore reflect insufficient power as much as a true null effect.
+
+#### Influence Diagnostics and Robustness
+
+```{r}
+#| include: false
+
+cooksd_gang <- cooks.distance(model_base)
+n_gang <- nobs(model_base)
+influential_gang <- which(cooksd_gang > 4 / n_gang)
+
+cooksd_bribe <- cooks.distance(model_bribe_base)
+n_bribe <- nobs(model_bribe_base)
+influential_bribe <- which(cooksd_bribe > 4 / n_bribe)
+```
+
+I next assess whether individual high-leverage observations are disproportionately driving the estimated coefficients. This is especially pertinent for the gang extortion model, where the small victim subgroup means that atypical extortion victims could exert outsized influence on the estimate. Cook's Distance plots and influence bubble plots for both models are presented in Appendix B. The most influential observations in the gang extortion model (observations 914 and 1178) combine large negative studentized residuals with moderate leverage, indicating they are non-supporters whom the model predicted would support Bukele. Critically, the maximum Cook's Distance values remain small in absolute terms (0.013 for the gang model, 0.015 for the bribery model), well below the conventional threshold of 0.5 or 1.0. Nonetheless, because the $4/n$ threshold flags a non-trivial number of observations ($4/n \approx 0.0028$), I re-estimate the gang extortion model excluding all flagged observations.
+
+```{r}
+#| results: asis
+
+model_base_robust <- glm(bukele_support ~
+                           extortion_victim +
+                           econ_perception +
+                           is_urban +
+                           edr +
+                           corruption_perc +
+                           muni_services,
+                         data = LAPOP_Model[-influential_gang, ],
+                         family = "binomial")
+
+robust_compare <- data.frame(
+  Specification = c("Full Sample", "Excluding Influential Obs."),
+  N = c(nobs(model_base), nobs(model_base_robust)),
+  Beta = c(coef(model_base)["extortion_victim"],
+           coef(model_base_robust)["extortion_victim"]),
+  SE = c(summary(model_base)$coefficients["extortion_victim", "Std. Error"],
+         summary(model_base_robust)$coefficients["extortion_victim", "Std. Error"]),
+  p_value = c(summary(model_base)$coefficients["extortion_victim", "Pr(>|z|)"],
+              summary(model_base_robust)$coefficients["extortion_victim", "Pr(>|z|)"])
+)
+robust_compare$Beta <- round(robust_compare$Beta, 3)
+robust_compare$SE <- round(robust_compare$SE, 3)
+robust_compare$p_value <- round(robust_compare$p_value, 4)
+
+kbl(robust_compare, booktabs = TRUE,
+    caption = "Robustness Check: Extortion Victim Coefficient",
+    col.names = c("Specification", "N", "$\\beta$", "SE", "p-value"),
+    escape = FALSE,
+    align = c("l", "c", "c", "c", "c")) %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+The robustness check reveals that the extortion victim coefficient is sensitive to sample composition. In the full sample, extortion victimization is associated with a significant decrease in the probability of supporting Bukele ($\beta = -0.476, p = 0.022$). However, after excluding observations exceeding the $4/n$ Cook's Distance threshold, around 7% of the sample, the coefficient reverses sign ($\beta = 0.608$) and loses statistical significance ($p = 0.066$). This sign reversal indicates that the full-sample result is driven by a subset of observations with atypical covariate-outcome combinations: specifically, extortion victims who do not support Bukele despite the model predicting they would, given their other characteristics.
+
+This finding does not necessarily invalidate the negative association observed in the full sample. The $4/n$ threshold is a conservative heuristic, and in a sample of $N = 1{,}427$ it flags observations with Cook's Distance values as low as 0.0028, well below the level at which individual points would be considered genuinely problematic (conventionally, $D > 0.5$ or $D > 1.0$). No single observation in either model approaches these absolute thresholds. Additionally, the influential observations are not artifacts; they represent real respondents whose experiences may be substantively important for the theoretical argument. Nevertheless, the sensitivity of the coefficient to their inclusion means that the rejection of $H_1$ should be interpreted cautiously. The full-sample estimates suggest that extortion victims are less likely to support Bukele, consistent with a "policy failure" interpretation, but this association is not robust to the exclusion of high-influence cases.
+
+#### Discriminatory Power
+
+Both models produce overall AUC values of approximately 0.67 (Gang: 0.672; Bribery: 0.669), below the conventional 0.7 threshold for acceptable discrimination. The near-identical values across models are expected, as both share the same control variables and differ only in their victimization measure. To determine whether this limited discrimination reflects a specification failure or a structural feature of the data, I decompose each model's AUC through a drop-one analysis, removing each predictor individually and measuring the resulting loss in discrimination. The ROC curves for both full models are presented in Appendix B.
+
+```{r}
+#| out.width: "85%"
+#| fig.align: 'center'
+#| fig.cap: "Marginal Discriminatory Contribution by Predictor (Drop-One AUC Comparison)"
+
+roc_gang_full  <- roc(model_base$y, fitted(model_base), quiet = TRUE)
+roc_bribe_full <- roc(model_bribe_base$y, fitted(model_bribe_base), quiet = TRUE)
+
+controls <- c("econ_perception", "is_urban", "edr", "corruption_perc", "muni_services")
+gang_vars  <- c("extortion_victim", controls)
+bribe_vars <- c("bribe_victim", controls)
+
+drop_one_auc <- function(all_vars, data, response = "bukele_support") {
+  full_fmla <- as.formula(paste(response, "~", paste(all_vars, collapse = " + ")))
+  full_mod  <- glm(full_fmla, data = data, family = "binomial")
+  full_auc  <- as.numeric(auc(roc(full_mod$y, fitted(full_mod), quiet = TRUE)))
+  
+  results <- data.frame(Dropped = character(), AUC_Full = numeric(),
+                         AUC_Reduced = numeric(), Delta_AUC = numeric(),
+                         stringsAsFactors = FALSE)
+  
+  for (v in all_vars) {
+    reduced_vars <- setdiff(all_vars, v)
+    red_fmla <- as.formula(paste(response, "~", paste(reduced_vars, collapse = " + ")))
+    red_mod  <- glm(red_fmla, data = data, family = "binomial")
+    red_auc  <- as.numeric(auc(roc(red_mod$y, fitted(red_mod), quiet = TRUE)))
+    results <- rbind(results, data.frame(Dropped = v, AUC_Full = full_auc,
+                                          AUC_Reduced = red_auc,
+                                          Delta_AUC = full_auc - red_auc))
+  }
+  results
+}
+
+gang_drop  <- drop_one_auc(gang_vars, LAPOP_Model)
+bribe_drop <- drop_one_auc(bribe_vars, LAPOP_Model)
+
+label_map <- c("extortion_victim" = "Extortion Victim", "bribe_victim" = "Bribe Victim",
+               "econ_perception" = "Econ Perception", "is_urban" = "Urban",
+               "edr" = "Education", "corruption_perc" = "Corruption Perc.",
+               "muni_services" = "Muni Services")
+
+gang_drop$Label  <- label_map[gang_drop$Dropped]
+bribe_drop$Label <- label_map[bribe_drop$Dropped]
+
+p_gang_drop <- ggplot(gang_drop, aes(x = reorder(Label, Delta_AUC), y = Delta_AUC)) +
+  geom_col(fill = "#E74C3C", alpha = 0.8) + coord_flip() +
+  labs(title = "Gang Extortion Model", x = NULL, y = expression(Delta ~ AUC)) +
+  theme_classic(base_size = 12, base_family = "serif")
+
+p_bribe_drop <- ggplot(bribe_drop, aes(x = reorder(Label, Delta_AUC), y = Delta_AUC)) +
+  geom_col(fill = "#3498DB", alpha = 0.8) + coord_flip() +
+  labs(title = "State Bribery Model", x = NULL, y = expression(Delta ~ AUC)) +
+  theme_classic(base_size = 12, base_family = "serif")
+
+(p_gang_drop + p_bribe_drop)
+```
+
+```{r}
+#| results: asis
+
+gang_drop$Model  <- "Gang Extortion"
+bribe_drop$Model <- "State Bribery"
+
+combined_drop <- rbind(gang_drop, bribe_drop)
+combined_drop <- combined_drop[order(combined_drop$Model, -combined_drop$Delta_AUC), ]
+
+drop_table <- combined_drop %>%
+  dplyr::select(Model, Label, AUC_Full, AUC_Reduced, Delta_AUC) %>%
+  dplyr::mutate(AUC_Full = round(AUC_Full, 3),
+                AUC_Reduced = round(AUC_Reduced, 3),
+                Delta_AUC = round(Delta_AUC, 4))
+
+kbl(drop_table, booktabs = TRUE,
+    caption = "Discriminatory Power: Drop-One AUC Comparison",
+    col.names = c("Model", "Dropped Variable", "AUC (Full)", "AUC (Reduced)", "$\\Delta$AUC"),
+    escape = FALSE, row.names = FALSE,
+    align = c("l", "l", "c", "c", "c")) %>%
+  kable_styling(latex_options = c("hold_position")) %>%
+  collapse_rows(columns = 1, valign = "top")
+```
+
+Across both models, the discriminatory hierarchy is nearly identical: Education ($\Delta$AUC $\approx 0.026-0.029$) and Economic Perception ($\Delta$AUC $\approx 0.021-0.024$) account for the vast majority of each model's ability to distinguish supporters from non-supporters, followed by Urbanization ($\Delta$AUC $\approx 0.007-0.009$). The remaining predictors, including both victimization variables, contribute minimally to overall discrimination.
+
+The extortion victim variable ($\Delta$AUC $= 0.0048$) and the bribe victim variable ($\Delta$AUC $= 0.0015$) rank among the lowest contributors in their respective models. This result is expected and does not undermine the inferential findings. Discriminatory power measures a model's ability to correctly classify individual observations, which is driven by variables with broad distributional variation across the sample. Education and economic perception vary substantially and thus dominate classification. Victimization, by contrast, affects a small minority of respondents, about 10% for extortion and 5% for bribery, meaning it cannot meaningfully shift predicted probabilities for the bulk of observations regardless of its coefficient magnitude.
+
+The distinction between predictive importance and inferential importance is central here. The extortion victim coefficient is statistically significant, meaning that among the subset of respondents who experience extortion, the probability of supporting Bukele drops meaningfully. But because that subset is small, removing the variable barely affects overall classification accuracy. The AUC decomposition thus confirms that the limited discrimination is a structural consequence of the compressed dependent variable and the low base rate of victimization, not an indication that the treatment variables are irrelevant to the theoretical question.
+
+#### Likelihood Ratio Tests
+
+To formally assess whether the interaction terms ($H_3$) improve model fit beyond the main effects specification, I conduct likelihood ratio tests comparing nested models.
+
+```{r}
+#| results: asis
+
+lrt_gang  <- lrtest(model_base, model_interaction)
+lrt_bribe <- lrtest(model_bribe_base, model_bribe_interaction)
+
+lrt_table <- data.frame(
+  Comparison = c("Gang: Main vs. Interaction",
+                 "Bribe: Main vs. Interaction"),
+  Chi_Sq = round(c(lrt_gang$Chisq[2], lrt_bribe$Chisq[2]), 3),
+  df = c(lrt_gang$Df[2], lrt_bribe$Df[2]),
+  p_value = round(c(lrt_gang$`Pr(>Chisq)`[2], lrt_bribe$`Pr(>Chisq)`[2]), 3)
+)
+
+kbl(lrt_table, booktabs = TRUE,
+    caption = "Likelihood Ratio Tests: Main Effects vs. Interaction Models",
+    col.names = c("Comparison", "$\\chi^2$", "df", "p-value"),
+    escape = FALSE,
+    align = c("l", "c", "c", "c")) %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+The likelihood ratio tests confirm that the interaction terms do not significantly improve model fit in either specification. The gang extortion interaction yields $\chi^2 = 0.046$ ($p = 0.831$), indicating that the Victim $\times$ Economic Perception term contributes essentially nothing beyond the main effects. The bribery interaction approaches marginal relevance ($\chi^2 = 2.487, p = 0.115$) but fails to reach conventional significance thresholds. These results reinforce the null finding for $H_3$: there is no statistical evidence that economic perceptions moderate the relationship between victimization and incumbent support through a formal interaction mechanism. That said, the main effects of economic perception and victimization operate in opposing directions and are individually significant in the gang model, which is consistent with a compensatory dynamic even in the absence of a statistically significant interaction term.
+
+#### Summary of Diagnostics
+
+Across the battery of diagnostic tests, the logistic regression models demonstrate no separation issues, no multicollinearity concerns (all VIF $< 1.2$; see Appendix B), and adequate calibration (Hosmer-Lemeshow $p > 0.10$; see Appendix B). The models exhibit modest but limited discriminatory power (AUC $\approx 0.67$), which the drop-one decomposition confirms is driven by education and economic perception rather than the treatment variables — a structural consequence of the high baseline support for Bukele and the low base rate of victimization. The likelihood ratio tests yield a clean null for $H_3$, confirming that the interaction terms do not improve fit. The principal concern is the sensitivity of the extortion victim coefficient to the exclusion of high-influence observations, which suggests that the rejection of $H_1$ should be interpreted with caution.
+
+## Conclusion: Public Opinion and Democratic Perceptions
+
+Despite a growing body of research, important gaps remain in understanding how public opinion responds to state violence and how citizen tolerance for authoritarianism is shaped by their experiences and identities. Much of the existing literature focuses on policy effects or elite behavior, with comparatively little attention to how support for authoritarian regimes is constructed and sustained from below. For example, @castroSavingDemocracyReducing2022 examine how gang presence affects electoral participation, showing that criminal governance can significantly shape electoral outcomes, yet they do not extend this analysis to perceptions of democratic legitimacy.
+
+Additionally, in their report @melendez-sanchezUltraderechaSalvadorPeculiar2023 shows acts of democratic erosion in El Salvador have had little negative impact on public opinion. In fact, public satisfaction with democracy has increased since Bukele’s election, rising sharply between 2018 and 2021. Paradoxically, Salvadorans have grown more confident in a political system that is, by objective institutional standards, becoming less democratic. Nonetheless, the paper only examines political attitudes toward democracy itself, rather than public opinion and the electoral success of Bukele.
+
+Despite extensive discussion of democratic backsliding, relatively little research examines Bukele himself as the central object of public opinion. There is also limited empirical work on how state violence, notably mass arrests under the state of emergency, shapes voting behavior or long-term attitudes toward authoritarianism. Existing studies do not yet capture whether public support hinges solely on continued security “success,” or whether failures in maintaining safety might prompt voters to look beyond rhetoric. It remains unclear whether Bukele is insulated from or vulnerable to the same patterns of disillusionment that undermined ARENA and the FMLN.
+
+This research contributes to this gap by demonstrating that Bukele’s support is not unconditional, but rather contingent on specific performance metrics. While existing literature suggests that populist strongmen enjoy a 'blank check' from the electorate, my findings reveal a pattern of conditional accountability: Bukele is largely insulated from punishment for state predation (bribery), yet remains highly vulnerable to failures in providing security from non-state actors (gangs).
+
+This challenges the simplistic view that citizens merely trade liberty for security. Instead, it suggests a more complex rationalization of state transgression for voters as a necessary cost of governance, while rejecting non-state violence as a failure of governance. Citizens do not absolve the incumbent of accountability entirely, rather, they have narrowed the scope of accountability to the single issue of gang violence, effectively granting the state a monopoly on predation.
+
+While the individual-level approach allows for a direct assessment of the mechanisms linking victimization to political support, the structure of the data limits the analysis to a single point in time. Because the survey captures victimization experiences and political attitudes simultaneously, we cannot establish temporal precedence. While the theoretical argument posits that victimization causes a withdrawal of support ($X \rightarrow Y$), it is plausible that a mechanism of "reverse causality" or reporting bias exists ($Y \rightarrow X$). Strongly partisan supporters of President Bukele may be psychologically motivated to underreport victimization to avoid casting the administration in a negative light (social desirability bias). Conversely, opponents of the regime might overreport or be more sensitized to security failures. If this reporting bias is present, our estimates of the "punishment effect" could be inflated.
+
+As well, the reliance on retrospective vote choice (2019) or cross-sectional snapshots limits our ability to measure the change in support. Ideally, a panel design would track the same respondents before and after victimization to see if their specific support levels dropped. By relying on a single cross-section, we are inferring a dynamic process (punishment) from a static snapshot.
+
+The data itself fails to capture the attitudes of respondents before the 2019 election, where the question of Bukele support would be most relevant. Data from the 2023 LAPOP survey includes a question on vote choice in 2019, but the responses were heavily skewed toward Bukele, with over 70% of respondents reporting voting for him despite only winning around 52% of the vote. This suggests significant social desirability bias in the retrospective vote choice question, and puts into question the validity of using both this retroactive reporting as well as perception variables as a whole as the DV.
+
+Additionally, the split-sample design prevents the entire survey from being utilized, requiring the use of proxies back primarily by theories around the data generating process for certain demographic controls (e.g., Education for Income) that were located in the excluded survey module.
+
+Taken together, these findings align more closely with the performance legitimacy framework than with the iron fist thesis. The mano dura literature predicts that victimization drives demand for authoritarian governance; instead, continued victimization under an incumbent who has staked his legitimacy on security delivery functions as a performance failure that erodes support. If performance legitimacy is understood not exclusively in economic terms but as the state's perceived capacity to deliver on the outcomes citizens prioritize most, then El Salvador under Bukele represents a case in which the operative domain of legitimation is security rather than GDP growth or poverty reduction. This broadened definition bridges the gap between the economic focus of the backsliding literature and the security focus of the mano dura scholarship, suggesting that the Fukuyama-Carothers debate over whether delivery drives backsliding tolerance may be asking the right question with too narrow a definition of what delivery means
+
+\newpage
+
+\appendix
+\renewcommand{\thefigure}{A.\arabic{figure}}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{A.\arabic{table}}
+\setcounter{table}{0}
+
+## Appendix A: Exploratory Analysis
+
+### Distribution of Victimization Variables
+
+```{r}
+#| out.width: "65%"
+#| fig.align: 'center'
+#| fig.cap: "Distribution of Victimization Variables"
+
+# Plot 1: Gang Extortion Distribution
+plot_gang <- ggplot(LAPOP_Model, aes(x = as.factor(extortion_victim))) +
+  geom_bar(fill = "#E74C3C", alpha = 0.8) + # Red for Danger
+  labs(
+    title = "Gang Extortion (Policy Failure)",
+    x = "Victim Status (1 = Yes, 0 = No)",
+    y = "Count"
+  ) +
+  theme_classic(base_size = 12, base_family = "serif")
+
+# Plot 2: State Bribery Distribution
+plot_bribe <- ggplot(LAPOP_Model, aes(x = as.factor(bribe_victim))) +
+  geom_bar(fill = "#3498DB", alpha = 0.8) + # Blue for State
+  labs(
+    title = "State Bribery (Institutional Abuse)",
+    x = "Victim Status (1 = Yes, 0 = No)",
+    y = "Count"
+  ) +
+  theme_classic(base_size = 12, base_family = "serif")
+
+# Combine
+combined_vic <- plot_gang + plot_bribe
+print(combined_vic)
+```
+
+### Victim Profiles
+
+#### Gang Extortion Victims
+
+```{r}
+#| out.width: "65%"
+#| fig.align: 'center'
+#| fig.cap: "Covariate Profiles: Gang Extortion Victims vs. Non-Victims"
+
+my_theme <- theme_classic(base_size = 10, base_family = "serif") +
+  theme(plot.title = element_text(size = 11, face = "bold"))
+
+plot_edu <- ggplot(LAPOP_Model, aes(x = as.factor(extortion_victim), y = edr)) +
+  geom_boxplot(fill = "lightgreen", alpha = 0.7) +
+  labs(title = "Education", x = NULL, y = "Level (0-3)") +
+  my_theme
+
+plot_urban <- ggplot(LAPOP_Model, aes(x = as.factor(extortion_victim), fill = as.factor(is_urban))) +
+  geom_bar(position = "fill") +
+  labs(title = "Urbanization", x = NULL, y = "Proportion", fill = "Urban") +
+  my_theme
+
+plot_econ <- ggplot(LAPOP_Model, aes(x = as.factor(extortion_victim), y = econ_perception)) +
+  geom_boxplot(fill = "lightgoldenrod", alpha = 0.7) +
+  labs(title = "Econ Perception", x = "Victim (1=Yes)", y = "Scale (1-3)") +
+  my_theme
+
+plot_corr <- ggplot(LAPOP_Model, aes(x = as.factor(extortion_victim), y = corruption_perc)) +
+  geom_boxplot(fill = "lightcoral", alpha = 0.7) +
+  labs(title = "Corruption Perc.", x = "Victim (1=Yes)", y = "Scale (1-4)") +
+  my_theme
+
+combined_balance <- (plot_edu + plot_urban) / (plot_econ + plot_corr) +
+  plot_layout(guides = "collect")
+
+print(combined_balance)
+```
+
+#### State Bribery Victims
+
+```{r}
+#| echo: false
+#| out.width: "65%"
+#| fig.align: 'center'
+#| fig.cap: "Covariate Profiles: State Bribery Victims vs. Non-Victims"
+
+# 1. Education (Bribe)
+plot_edu_b <- ggplot(LAPOP_Model, aes(x = as.factor(bribe_victim), y = edr)) +
+  geom_boxplot(fill = "lightblue", alpha = 0.7) +
+  labs(title = "Education", x = NULL, y = "Level (0-3)") +
+  my_theme
+
+# 2. Urbanization (Bribe)
+plot_urban_b <- ggplot(LAPOP_Model, aes(x = as.factor(bribe_victim), fill = as.factor(is_urban))) +
+  geom_bar(position = "fill") +
+  labs(title = "Urbanization", x = NULL, y = "Proportion", fill = "Urban") +
+  my_theme
+
+# 3. Econ Perception (Bribe)
+plot_econ_b <- ggplot(LAPOP_Model, aes(x = as.factor(bribe_victim), y = econ_perception)) +
+  geom_boxplot(fill = "lightgoldenrod", alpha = 0.7) +
+  labs(title = "Econ Perception", x = "Bribe Victim", y = "Scale (1-3)") +
+  my_theme
+
+# 4. Corruption Perception (Bribe)
+plot_corr_b <- ggplot(LAPOP_Model, aes(x = as.factor(bribe_victim), y = corruption_perc)) +
+  geom_boxplot(fill = "lightcoral", alpha = 0.7) +
+  labs(title = "Corruption Perc.", x = "Bribe Victim", y = "Scale (1-4)") +
+  my_theme
+
+# Combine
+combined_balance_b <- (plot_edu_b + plot_urban_b) / (plot_econ_b + plot_corr_b) +
+  plot_layout(guides = "collect")
+
+print(combined_balance_b)
+```
+
+These visualizations suggest distinct victim profiles. While bribe victims also skew towards Urbanization (similar to gang victims), they do not share the same economic pessimism. As shown in the boxplots, the distribution of Economic Perception for bribe victims skews slightly higher than for non-victims, suggesting that those interacting with state officials (and thus exposed to bribery) may be more economically active or secure. Unlike gang extortion, which appears to act as a tax on the vulnerable, state bribery appears to target citizens who are integrated into the formal economy.
+
+\newpage
+\renewcommand{\thefigure}{B.\arabic{figure}}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{B.\arabic{table}}
+\setcounter{table}{0}
+
+## Appendix B: Diagnostic Plots and Tables
+
+### Cook's Distance
+
+```{r}
+#| out.width: "50%"
+#| fig.align: 'center'
+#| fig.cap: "Cook's Distance: Gang Extortion Model"
+
+plot(cooksd_gang, type = "h",
+     main = "Cook's Distance: Gang Extortion Model",
+     ylab = "Cook's Distance", xlab = "Observation Index",
+     col = ifelse(cooksd_gang > 4 / n_gang, "red", "black"),
+     family = "serif")
+abline(h = 4 / n_gang, col = "red", lty = 2)
+```
+
+```{r}
+#| out.width: "75%"
+#| fig.align: 'center'
+#| fig.cap: "Cook's Distance: State Bribery Model"
+
+plot(cooksd_bribe, type = "h",
+     main = "Cook's Distance: State Bribery Model",
+     ylab = "Cook's Distance", xlab = "Observation Index",
+     col = ifelse(cooksd_bribe > 4 / n_bribe, "red", "black"),
+     family = "serif")
+abline(h = 4 / n_bribe, col = "red", lty = 2)
+```
+
+### Influence Plots
+
+```{r}
+#| out.width: "50%"
+#| fig.align: 'center'
+#| fig.cap: "Influence Plot: Gang Extortion Model (bubble size = Cook's D)"
+
+influencePlot(model_base, main = "Influence Plot: Gang Extortion Model")
+```
+
+```{r}
+#| out.width: "75%"
+#| fig.align: 'center'
+#| fig.cap: "Influence Plot: State Bribery Model (bubble size = Cook's D)"
+
+influencePlot(model_bribe_base, main = "Influence Plot: State Bribery Model")
+```
+
+### Binned Residual Plots
+
+```{r}
+#| out.width: "85%"
+#| fig.align: 'center'
+#| fig.cap: "Binned Residual Plots"
+
+par(mfrow = c(1, 2))
+
+binnedplot(fitted(model_base),
+           residuals(model_base, type = "response"),
+           main = "Gang Extortion Model",
+           xlab = "Predicted Probability",
+           ylab = "Average Residual",
+           cex.main = 0.9)
+
+binnedplot(fitted(model_bribe_base),
+           residuals(model_bribe_base, type = "response"),
+           main = "State Bribery Model",
+           xlab = "Predicted Probability",
+           ylab = "Average Residual",
+           cex.main = 0.9)
+
+par(mfrow = c(1, 1))
+```
+
+The majority of binned averages fall within the expected error bounds for both models, indicating broadly adequate calibration. A small number of bins at higher predicted probabilities fall outside the bands, consistent with compressed variation in the upper range of the predicted probability distribution.
+
+### Hosmer-Lemeshow Goodness-of-Fit
+
+```{r}
+#| results: asis
+
+hl_gang  <- hoslem.test(model_base$y, fitted(model_base), g = 10)
+hl_bribe <- hoslem.test(model_bribe_base$y, fitted(model_bribe_base), g = 10)
+
+hl_table <- data.frame(
+  Model = c("Gang Extortion", "State Bribery"),
+  Chi_Sq = round(c(hl_gang$statistic, hl_bribe$statistic), 3),
+  df = c(hl_gang$parameter, hl_bribe$parameter),
+  p_value = round(c(hl_gang$p.value, hl_bribe$p.value), 3)
+)
+
+kbl(hl_table, booktabs = TRUE,
+    caption = "Hosmer-Lemeshow Goodness-of-Fit Test",
+    col.names = c("Model", "$\\chi^2$", "df", "p-value"),
+    escape = FALSE,
+    align = c("l", "c", "c", "c")) %>%
+  kable_styling(latex_options = c("hold_position")) %>%
+  footnote(general = "Non-significant p-value indicates adequate model fit.")
+```
+
+Neither model shows evidence of poor fit. The gang extortion model yields $\chi^2 = 11.72$ ($p = 0.164$) and the state bribery model yields $\chi^2 = 8.11$ ($p = 0.422$), both failing to reject the null hypothesis of adequate calibration.
+
+### Variance Inflation Factors
+
+```{r}
+#| results: asis
+
+vif_gang  <- vif(model_base)
+vif_bribe <- vif(model_bribe_base)
+
+vif_table <- data.frame(
+  Variable = names(vif_gang),
+  VIF_Gang = round(vif_gang, 3),
+  VIF_Bribe = round(vif_bribe, 3)
+)
+rownames(vif_table) <- NULL
+
+kbl(vif_table, booktabs = TRUE,
+    caption = "Variance Inflation Factors",
+    col.names = c("Variable", "Gang Model", "Bribe Model"),
+    align = c("l", "c", "c")) %>%
+  kable_styling(latex_options = c("hold_position")) %>%
+  footnote(general = "VIF > 5 suggests problematic multicollinearity; VIF > 10 is severe.")
+```
+
+All VIF values are near 1.0, with the highest being 1.155. Multicollinearity does not pose a threat to coefficient estimation in either model.
+
+### ROC Curves
+
+```{r}
+#| out.width: "65%"
+#| fig.align: 'center'
+#| fig.cap: "ROC Curves: Model Discrimination"
+
+roc_gang  <- roc(model_base$y, fitted(model_base), quiet = TRUE)
+roc_bribe <- roc(model_bribe_base$y, fitted(model_bribe_base), quiet = TRUE)
+
+plot(roc_gang, col = "#E74C3C",
+     main = "ROC Curves: Model Discrimination",
+     legacy.axes = TRUE,
+     print.auc = TRUE, print.auc.y = 0.45)
+plot(roc_bribe, col = "#3498DB", add = TRUE,
+     print.auc = TRUE, print.auc.y = 0.35)
+legend("bottomright",
+       legend = c(paste0("Gang Model (AUC = ", round(auc(roc_gang), 3), ")"),
+                  paste0("Bribe Model (AUC = ", round(auc(roc_bribe), 3), ")")),
+       col = c("#E74C3C", "#3498DB"), lwd = 2, cex = 0.8)
+```
+
+### Distribution of Predicted Probabilities
+
+```{r}
+#| out.width: "85%"
+#| fig.align: 'center'
+#| fig.cap: "Distribution of Predicted Probabilities"
+
+par(mfrow = c(1, 2))
+
+hist(fitted(model_base), breaks = 30,
+     main = "Gang Extortion Model",
+     xlab = "P(Support Bukele)", col = "#E74C3C50", border = "white")
+abline(v = 0.5, lty = 2, col = "black")
+
+hist(fitted(model_bribe_base), breaks = 30,
+     main = "State Bribery Model",
+     xlab = "P(Support Bukele)", col = "#3498DB50", border = "white")
+abline(v = 0.5, lty = 2, col = "black")
+
+par(mfrow = c(1, 1))
+```
+
+Nearly all predicted probabilities fall between 0.50 and 0.95, with the bulk concentrated between 0.60 and 0.85. This compression is a structural consequence of the high baseline support for Bukele and reinforces the importance of the conservative coding decision to group "Fair" responses with non-support.
+
+\newpage
+
+## Works Cited

@@ -10,6 +10,8 @@ website:
         text: Home
       - href: projects.qmd
         text: Research
+      - href: blog.qmd
+        text: Blog
     tools:
       - icon: github
         href: https://github.com/lucaalioto

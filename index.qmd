@@ -1,7 +1,6 @@
 ---
 title: "Luca Alioto"
-subtitle: "Undergraduate Student <br> Political Science & Community Development <br> University of California, Davis <br> ✉️ [jalioto@ucdavis.edu](mailto:jalioto@ucdavis.edu)"
-image: img/chavez.jpg
+subtitle: "Undergraduate Student <br> Political Science<br>Community Development <br> University of California, Davis <br> ✉️ [jalioto@ucdavis.edu](mailto:jalioto@ucdavis.edu)"
 toc: false
 about: 
   template: trestles
@@ -11,22 +10,36 @@ about:
     - icon: github 
       text: Github
       href: https://github.com/lucaalioto
-    - icon: CV
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com/in/luca-alioto
+    - icon: file-pdf
       text: CV
-      href: https://drive.google.com/file/d/1pTMnGRbnpHMQo4VeXwNEM54j_zLcJEkC/view?usp=sharing
+      href: assets/AliotoLucaR.pdf
+resources:
+  - assets/**
 ---
-
+<style>
+.quarto-title h1.title {
+  font-size: 1.75em; /* default is larger, adjust to taste */
+}
+</style>
 ### About Me
 
-Hello! My name is Luca, and I am a 4th-year Political Science and Community Development major at the University of California, Davis. 
+Hello! My name is Luca, and I am a 4th-year Political Science and Community Development major at the University of California, Davis. I'll be starting my Masters in Urban and Regional Planning in the upcoming fall! 
 
-My approach to political science lives at the intersection of theory and practice, making me an individual with the hard skills of policy and quantitative human-driven research expertise, created through my soft skills of personal engagement; a qualitative understanding that comes from passion and involvement.
+My approach to political science lives at the intersection of theory and practice, making me an individual with the hard skills of policy and quantitative human-driven research expertise, created through community and personal engagement; an understanding that comes from passion and involvement.
 
-My research interests include democratic backsliding, housing, mass incarceration, media coverage of conflict, transportation, urban economics, and urban planning & policy.
-
-Feel free to contact me at jalioto@ucdavis.edu
+My current research spans three areas: my honors thesis on political violence and democratic backsliding in El Salvador, the develoment of a manuscipt of housing and transportation policy analysis, and political/voting behavior research assistant work. 
 
 ### Education
 
-<p class="custom-subtitle"> **BA in Political Science and BS in Community & Regional Development** | University of California, Davis </p>  
-</div>
+**Master of Urban and Regional Planning**<br>
+University of California, Los Angeles • June 2028
+
+**BA Political Science & BS Community Development**<br>
+University of California, Davis • June 2026 • GPA 3.8
+
+### Research Interests 
+
+Political Violence | Mass Incarceration | Media Analysis | Housing & Transportation | Economic Development | Inequality

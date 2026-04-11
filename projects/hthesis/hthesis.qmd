@@ -42,6 +42,6 @@ format:
         </style>
 ---
 
-<a href="assets/papers/hthesis.pdf" class="download-btn" download>
+<a href="/assets/papers/hthesis.pdf" class="download-btn" download>
   <i class="bi bi-file-earmark-pdf"></i> Download Full Paper (PDF)
 </a>

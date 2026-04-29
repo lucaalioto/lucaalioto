@@ -1,6 +1,6 @@
 ---
 title: "Luca Alioto"
-subtitle: "Undergraduate Student <br> University of California, Davis <br> ✉️ [jalioto@ucdavis.edu](mailto:jalioto@ucdavis.edu)"
+subtitle: "Undergraduate Student <br> University of California, Davis <br> ✉️ [jalioto@ucla.edu](mailto:jalioto@ucla.edu)"
 toc: false
 about: 
   template: trestles

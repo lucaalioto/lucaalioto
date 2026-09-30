@@ -7,18 +7,15 @@ about:
   image-shape: rounded
   image-width: 16em
   links:
-    - icon: github 
-      text: Github
-      href: https://github.com/lucaalioto
     - icon: linkedin
       text: LinkedIn
       href: https://linkedin.com/in/luca-alioto
-    - icon: file-pdf
-      text: CV
-      href: assets/cv/AliotoLucaR.pdf
     - icon: calendar-event
       text: Calendar
       href: https://calendar.notion.so/meet/lucaalioto/4c9jr4ykj
+    - icon: file-pdf
+      text: CV
+      href: assets/cv/AliotoLucaR.pdf
 resources:
   - assets/**
 ---
@@ -26,10 +23,13 @@ resources:
 .quarto-title h1.title {
   font-size: 1.75em; /* default is larger, adjust to taste */
 }
+.quarto-title .subtitle {
+  font-size: 1.15rem; /* keeps the school name on one line */
+}
 </style>
 ### About Me
 
-My name is Luca Alioto, and I'm a first-year Master of Urban and Regional Planning student (or MURP for short) in the Luskin School of Public Affairs at UCLA. This past spring I completed my undergrad at UC Davis, studying Political Science and Community Development.
+My name is Luca Alioto, and I'm a first-year Master of Urban and Regional Planning student (or MURP for short!) in the Luskin School of Public Affairs at UCLA. This past spring I completed my undergrad at UC Davis, studying Political Science and Community Development.
 
 My approach to planning and politics lives at the intersection of theory and practice, making me an individual with the hard skills of policy and quantitative human-driven research expertise, created through community and personal engagement; an understanding that comes from passion and involvement.
 

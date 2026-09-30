@@ -1,6 +1,6 @@
 ---
 title: "Luca Alioto"
-subtitle: "Undergraduate Student <br> University of California, Davis <br> ✉️ [jalioto@ucla.edu](mailto:jalioto@ucla.edu)"
+subtitle: "Urban Planning Student <br> University of California, Los Angeles <br> ✉️ [jalioto@ucla.edu](mailto:jalioto@ucla.edu)"
 toc: false
 about: 
   template: trestles
@@ -16,6 +16,9 @@ about:
     - icon: file-pdf
       text: CV
       href: assets/cv/AliotoLucaR.pdf
+    - icon: calendar-event
+      text: Calendar
+      href: https://calendar.notion.so/meet/lucaalioto/4c9jr4ykj
 resources:
   - assets/**
 ---
@@ -26,11 +29,11 @@ resources:
 </style>
 ### About Me
 
-Hello! My name is Luca, and I am a 4th-year Political Science and Community Development major at the University of California, Davis. I'll be starting my Masters in Urban and Regional Planning in the upcoming fall! 
+My name is Luca Alioto, and I'm a first-year Master of Urban and Regional Planning student (or MURP for short) in the Luskin School of Public Affairs at UCLA. This past spring I completed my undergrad at UC Davis, studying Political Science and Community Development.
 
-My approach to political science lives at the intersection of theory and practice, making me an individual with the hard skills of policy and quantitative human-driven research expertise, created through community and personal engagement; an understanding that comes from passion and involvement.
+My approach to planning and politics lives at the intersection of theory and practice, making me an individual with the hard skills of policy and quantitative human-driven research expertise, created through community and personal engagement; an understanding that comes from passion and involvement.
 
-My current research spans three areas: my honors thesis on political violence and democratic backsliding in El Salvador, the develoment of a manuscipt of housing and transportation policy analysis, and political/voting behavior research assistant work. 
+My current research spans three areas: refining my honors thesis on political violence and democratic backsliding in El Salvador, the development of a manuscript on housing and transportation policy analysis, and research assistant work on job accessibility. 
 
 ### Education
 
@@ -42,4 +45,4 @@ University of California, Davis • June 2026 • GPA 3.8
 
 ### Research Interests 
 
-Political Violence | Mass Incarceration | Media Analysis | Housing & Transportation | Economic Development | Inequality
+Labor & Ethnic Studies | Political Violence | Immigration | Intra/intergroup Relations | Mass Incarceration | Media Analysis | Housing & Transportation Equity | Economic Development | Inequality | Democratic Backsliding 

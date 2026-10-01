@@ -12,7 +12,7 @@ about:
       href: https://linkedin.com/in/luca-alioto
     - icon: calendar-event
       text: Calendar
-      href: https://calendar.notion.so/meet/lucaalioto/4c9jr4ykj
+      href: https://calendly.com/jalioto22/30min
     - icon: file-pdf
       text: CV
       href: assets/cv/AliotoLucaR.pdf
@@ -25,6 +25,9 @@ resources:
 }
 .quarto-title .subtitle {
   font-size: 1.15rem; /* keeps the school name on one line */
+}
+#title-block-header {
+  margin-bottom: 0.3rem; /* tightens gap above the link buttons */
 }
 </style>
 ### About Me
